@@ -5,21 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Servicios Okinawa Uno</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --verde: #1B8C5A;
-    --verde-claro: #E8F5EE;
-    --verde-oscuro: #0F5C3A;
+    --verde-oscuro: #143D2C;
+    --verde: #2C7A54;
+    --verde-claro: #E7F3EB;
+    --oro: #C89B3C;
+    --oro-claro: #FAF1DE;
     --wa: #25D366;
     --wa-hover: #1DA851;
-    --texto: #1A1A2E;
-    --texto-suave: #5A5A72;
-    --borde: #E2E8F0;
-    --fondo: #F7F9FC;
+    --texto: #191E1B;
+    --texto-suave: #5B6460;
+    --borde: #E3E7E3;
+    --fondo: #F7F8F5;
     --blanco: #FFFFFF;
-    --radio: 12px;
-    --sombra: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --radio: 14px;
+    --sombra: 0 1px 2px rgba(20,40,30,0.06), 0 4px 14px rgba(20,40,30,0.05);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,7 +36,7 @@
 
   /* ── HEADER ── */
   header {
-    background: var(--verde);
+    background: linear-gradient(155deg, var(--verde-oscuro) 0%, #1D5A3F 100%);
     color: white;
     padding: 0;
   }
@@ -61,31 +63,33 @@
   }
 
   .logo-icono {
-    width: 40px;
-    height: 40px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    background: rgba(200,155,60,0.22);
+    border: 1px solid rgba(200,155,60,0.4);
+    border-radius: 11px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 20px;
+    font-size: 21px;
   }
 
   .logo-texto h1 {
-    font-family: 'Sora', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 600;
     line-height: 1.2;
+    letter-spacing: -0.01em;
   }
 
   .logo-texto span {
     font-size: 12px;
-    opacity: 0.8;
+    opacity: 0.75;
     font-weight: 400;
   }
 
   .btn-registro-header {
-    background: white;
+    background: var(--oro);
     color: var(--verde-oscuro);
     border: none;
     padding: 9px 18px;
@@ -98,7 +102,7 @@
   }
 
   .btn-registro-header:hover {
-    background: var(--verde-claro);
+    background: #DBAE4E;
   }
 
   /* ── BÚSQUEDA ── */
@@ -134,18 +138,25 @@
   .cats-bar {
     background: white;
     border-bottom: 1px solid var(--borde);
+    position: relative;
+    padding: 0 20px;
+  }
+
+  .cats-scroll {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    max-width: 960px;
+    margin: 0 auto;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
   }
-  .cats-bar::-webkit-scrollbar { display: none; }
+  .cats-scroll::-webkit-scrollbar { display: none; }
 
   .cats-inner {
     display: flex;
-    gap: 6px;
-    padding: 12px 20px;
-    max-width: 960px;
-    margin: 0 auto;
+    gap: 7px;
+    padding: 13px 4px;
     min-width: max-content;
   }
 
@@ -166,8 +177,8 @@
   .cat-btn:hover { border-color: var(--verde); color: var(--verde); }
 
   .cat-btn.activo {
-    background: var(--verde);
-    border-color: var(--verde);
+    background: var(--verde-oscuro);
+    border-color: var(--verde-oscuro);
     color: white;
   }
 
@@ -238,10 +249,11 @@
   .tarjeta-info { flex: 1; min-width: 0; }
 
   .tarjeta-nombre {
+    font-family: 'Fraunces', serif;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 16px;
     color: var(--texto);
-    margin-bottom: 3px;
+    margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -321,7 +333,8 @@
   /* ── BANNER REGISTRO ── */
   .banner-registro {
     background: var(--verde-claro);
-    border: 1.5px solid #B8E0CC;
+    border: 1.5px solid #CFE4D6;
+    border-left: 4px solid var(--oro);
     border-radius: var(--radio);
     padding: 20px 24px;
     display: flex;
@@ -339,13 +352,14 @@
 
   .banner-registro strong {
     display: block;
-    font-size: 15px;
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
     font-weight: 600;
     margin-bottom: 3px;
   }
 
   .btn-registro-banner {
-    background: var(--verde);
+    background: var(--verde-oscuro);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -358,7 +372,7 @@
     font-family: 'Inter', sans-serif;
   }
 
-  .btn-registro-banner:hover { background: var(--verde-oscuro); }
+  .btn-registro-banner:hover { background: #0E3123; }
 
   /* ── FOOTER ── */
   footer {
@@ -426,18 +440,20 @@
 </header>
 
 <nav class="cats-bar" role="navigation" aria-label="Categorías">
-  <div class="cats-inner">
-    <button class="cat-btn activo" data-cat="todos">Todos</button>
-    <button class="cat-btn" data-cat="salud">Salud</button>
-    <button class="cat-btn" data-cat="alimentos">Alimentos</button>
-    <button class="cat-btn" data-cat="mecanica">Mecánica</button>
-    <button class="cat-btn" data-cat="tecnologia">Tecnología</button>
-    <button class="cat-btn" data-cat="educacion">Educación</button>
-    <button class="cat-btn" data-cat="belleza">Belleza</button>
-    <button class="cat-btn" data-cat="construccion">Construcción</button>
-    <button class="cat-btn" data-cat="transporte">Transporte</button>
-    <button class="cat-btn" data-cat="comercio">Comercio</button>
-    <button class="cat-btn" data-cat="otros">Otros</button>
+  <div class="cats-scroll" id="cats-scroll">
+    <div class="cats-inner">
+      <button class="cat-btn activo" data-cat="todos">Todos</button>
+      <button class="cat-btn" data-cat="salud">Salud</button>
+      <button class="cat-btn" data-cat="alimentos">Alimentos</button>
+      <button class="cat-btn" data-cat="mecanica">Mecánica</button>
+      <button class="cat-btn" data-cat="tecnologia">Tecnología</button>
+      <button class="cat-btn" data-cat="educacion">Educación</button>
+      <button class="cat-btn" data-cat="belleza">Belleza</button>
+      <button class="cat-btn" data-cat="construccion">Construcción</button>
+      <button class="cat-btn" data-cat="transporte">Transporte</button>
+      <button class="cat-btn" data-cat="comercio">Comercio</button>
+      <button class="cat-btn" data-cat="otros">Otros</button>
+    </div>
   </div>
 </nav>
 
@@ -674,6 +690,10 @@ document.querySelectorAll('.cat-btn').forEach(btn => {
     btn.classList.add('activo');
     catActiva = btn.dataset.cat;
     renderizar();
+
+    // Centrar el botón elegido y pausar el carrusel un momento
+    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    pausarCarrusel(4000);
   });
 });
 
@@ -686,6 +706,49 @@ document.getElementById('buscador').addEventListener('input', e => {
     renderizar();
   }, 200);
 });
+
+// ── CARRUSEL AUTOMÁTICO DE CATEGORÍAS ──
+// Se desplaza solo (vaivén) para insinuar que hay más categorías fuera de vista.
+// Se detiene un momento cuando el usuario toca, arrastra o elige una categoría.
+let pausarCarrusel = function(){}; // se reemplaza abajo si el navegador lo permite
+
+(function initCarrusel() {
+  const scrollEl = document.getElementById('cats-scroll');
+  if (!scrollEl) return;
+
+  const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefiereMenosMovimiento) return;
+
+  let direccion = 1;
+  let pausado = false;
+  let reanudarTimeout = null;
+  const VELOCIDAD = 0.45; // px por frame
+
+  function paso() {
+    if (!pausado) {
+      const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
+      if (maxScroll > 2) {
+        scrollEl.scrollLeft += direccion * VELOCIDAD;
+        if (scrollEl.scrollLeft >= maxScroll - 1) direccion = -1;
+        if (scrollEl.scrollLeft <= 1) direccion = 1;
+      }
+    }
+    requestAnimationFrame(paso);
+  }
+
+  pausarCarrusel = function(ms) {
+    pausado = true;
+    clearTimeout(reanudarTimeout);
+    reanudarTimeout = setTimeout(() => { pausado = false; }, ms || 3500);
+  };
+
+  // Pausar si el usuario interactúa manualmente con la barra
+  ['pointerdown', 'touchstart', 'wheel'].forEach(evento => {
+    scrollEl.addEventListener(evento, () => pausarCarrusel(3500), { passive: true });
+  });
+
+  requestAnimationFrame(paso);
+})();
 
 cargarServicios();
 </script>
