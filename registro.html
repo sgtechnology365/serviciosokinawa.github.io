@@ -461,7 +461,10 @@ function enviarFormulario() {
 
   const datos = {
     nombre:      document.getElementById('nombre').value.trim(),
-    categoria:   document.getElementById('categoria').value,
+    categoria:   (function(){
+      var sel = document.getElementById('categoria');
+      return sel.options[sel.selectedIndex].text;
+    })(),
     descripcion: document.getElementById('descripcion').value.trim(),
     whatsapp:    '591' + document.getElementById('whatsapp').value.trim(),
     direccion:   document.getElementById('direccion').value.trim(),
