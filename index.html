@@ -456,6 +456,10 @@
   </div>
 
   <div id="grid-servicios">
+    <div style="grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--texto-suave);" id="cargando-msg">
+      <div style="font-size:32px; margin-bottom:10px;">⏳</div>
+      <p>Cargando servicios...</p>
+    </div>
     <div id="sin-resultados">
       <div class="icono">🔍</div>
       <p>No se encontraron servicios con ese criterio.</p>
@@ -469,65 +473,31 @@
 </footer>
 
 <script>
-// ── DATOS DE SERVICIOS ──
-// Para agregar servicios: copiar un bloque {} y completar los campos.
-// "aprobado: true" = aparece en el catálogo. "false" = oculto.
-const SERVICIOS = [
-  {
-    nombre: "Clínica Santa Rosa",
-    categoria: "salud",
-    emoji: "🩺",
-    descripcion: "Consultas médicas generales y pediatría. Atención lunes a viernes de 7:00 a 12:00 y de 15:00 a 19:00.",
-    direccion: "Av. Beni Nº 45, frente a la plaza principal",
-    whatsapp: "59170000001",
-    aprobado: true
-  },
-  {
-    nombre: "Comedor Doña Carmen",
-    categoria: "alimentos",
-    emoji: "🍽️",
-    descripcion: "Almuerzos del día, sopas y platos a la carta. Menú completo desde Bs. 15. Servicio a domicilio disponible.",
-    direccion: "Calle Comercio, Mz. 3 entre calles 1 y 2",
-    whatsapp: "59170000002",
-    aprobado: true
-  },
-  {
-    nombre: "Taller Don Marcos",
-    categoria: "mecanica",
-    emoji: "🔧",
-    descripcion: "Reparación de motos, autos y maquinaria agrícola. Servicio de cambio de aceite, frenos y electricidad vehicular.",
-    direccion: "Salida norte, km 1.5 sobre la carretera",
-    whatsapp: "59170000003",
-    aprobado: true
-  },
-  {
-    nombre: "TechSoluciones",
-    categoria: "tecnologia",
-    emoji: "💻",
-    descripcion: "Reparación de computadoras, laptops e impresoras. Instalación de redes, configuración de equipos y mantenimiento preventivo.",
-    direccion: "Barrio Centro, frente a la cancha deportiva",
-    whatsapp: "59170000004",
-    aprobado: true
-  },
-  {
-    nombre: "Ferretería El Constructor",
-    categoria: "construccion",
-    emoji: "🏗️",
-    descripcion: "Materiales de construcción, herramientas y pinturas. Entrega a domicilio dentro de Okinawa Uno.",
-    direccion: "Av. Principal Nº 112",
-    whatsapp: "59170000005",
-    aprobado: true
-  },
-  {
-    nombre: "Salón Bellas Manos",
-    categoria: "belleza",
-    emoji: "💅",
-    descripcion: "Corte de cabello, peinados, manicura y pedicura. Atención con cita previa. Servicio a domicilio disponible.",
-    direccion: "Calle 2 de Agosto Nº 28",
-    whatsapp: "59170000006",
-    aprobado: true
-  }
-];
+// ── CONEXIÓN A GOOGLE SHEETS ──
+// El ID se obtiene de la URL de tu hoja: .../d/ESTE_ID/edit
+const SHEET_ID = "1oiMp_LlbdEGNIkoQgwSPaeh8k6JdAW2to0gzNNacycM";
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+
+// Orden de columnas en la hoja: Timestamp, Nombre, Categoría, Descripción, WhatsApp, Dirección, Propietario, aprobado
+// Mapea el texto de categoría (como llega del formulario) al código interno usado para colores/filtros
+const MAPA_CATEGORIAS = {
+  "salud y bienestar": "salud",
+  "alimentos y bebidas": "alimentos",
+  "mecánica y autos": "mecanica",
+  "mecanica y autos": "mecanica",
+  "tecnología e informática": "tecnologia",
+  "tecnologia e informatica": "tecnologia",
+  "educación y capacitación": "educacion",
+  "educacion y capacitacion": "educacion",
+  "belleza y cuidado personal": "belleza",
+  "construcción y ferretería": "construccion",
+  "construccion y ferreteria": "construccion",
+  "transporte y encomiendas": "transporte",
+  "tiendas y comercio": "comercio",
+  "otros servicios": "otros"
+};
+
+let SERVICIOS = [];
 
 const EMOJIS_CAT = {
   salud: "🩺", alimentos: "🍽️", mecanica: "🔧", tecnologia: "💻",
@@ -544,6 +514,82 @@ const NOMBRES_CAT = {
 
 let catActiva = "todos";
 let textoBusqueda = "";
+
+// Parser CSV simple que respeta comillas y comas dentro de campos
+function parseCSV(texto) {
+  const filas = [];
+  let fila = [];
+  let campo = '';
+  let dentroComillas = false;
+
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i];
+    const sig = texto[i + 1];
+
+    if (dentroComillas) {
+      if (c === '"' && sig === '"') { campo += '"'; i++; }
+      else if (c === '"') { dentroComillas = false; }
+      else { campo += c; }
+    } else {
+      if (c === '"') { dentroComillas = true; }
+      else if (c === ',') { fila.push(campo); campo = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (campo !== '' || fila.length > 0) {
+          fila.push(campo);
+          filas.push(fila);
+          fila = [];
+          campo = '';
+        }
+        if (c === '\r' && sig === '\n') i++;
+      } else { campo += c; }
+    }
+  }
+  if (campo !== '' || fila.length > 0) { fila.push(campo); filas.push(fila); }
+  return filas;
+}
+
+function filaAServicio(cols) {
+  // cols: [Timestamp, Nombre, Categoría, Descripción, WhatsApp, Dirección, Propietario, aprobado]
+  const catTexto = (cols[2] || '').trim().toLowerCase();
+  const catCodigo = MAPA_CATEGORIAS[catTexto] || 'otros';
+  let telefono = (cols[4] || '').trim().replace(/\D/g, '');
+  if (telefono && !telefono.startsWith('591')) telefono = '591' + telefono;
+
+  return {
+    nombre: (cols[1] || '').trim(),
+    categoria: catCodigo,
+    emoji: EMOJIS_CAT[catCodigo] || '⭐',
+    descripcion: (cols[3] || '').trim(),
+    direccion: (cols[5] || '').trim(),
+    whatsapp: telefono,
+    aprobado: (cols[7] || '').trim().toUpperCase() === 'TRUE'
+  };
+}
+
+async function cargarServicios() {
+  const grid = document.getElementById('grid-servicios');
+  try {
+    const resp = await fetch(SHEET_URL, { cache: 'no-store' });
+    if (!resp.ok) throw new Error('No se pudo leer la hoja');
+    const texto = await resp.text();
+    const filas = parseCSV(texto);
+
+    // La primera fila es encabezado, se ignora
+    SERVICIOS = filas.slice(1)
+      .filter(f => f.length >= 8 && f[1] && f[1].trim())
+      .map(filaAServicio);
+
+    renderizar();
+  } catch (err) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--texto-suave);">
+        <div style="font-size:36px; margin-bottom:10px;">⚠️</div>
+        <p>No se pudieron cargar los servicios en este momento.</p>
+        <p style="font-size:12px; margin-top:6px;">Intenta recargar la página en unos segundos.</p>
+      </div>`;
+    console.error('Error cargando servicios desde Sheets:', err);
+  }
+}
 
 function crearTarjeta(s) {
   const cat = s.categoria || "otros";
@@ -601,8 +647,10 @@ function renderizar() {
 
   // limpiar tarjetas anteriores (dejar solo el div sin-resultados)
   Array.from(grid.children).forEach(c => {
-    if (c.id !== 'sin-resultados') c.remove();
+    if (c.id !== 'sin-resultados' && c.id !== 'cargando-msg') c.remove();
   });
+  const cargandoMsg = document.getElementById('cargando-msg');
+  if (cargandoMsg) cargandoMsg.remove();
 
   if (filtrados.length === 0) {
     sinRes.style.display = 'block';
@@ -639,7 +687,7 @@ document.getElementById('buscador').addEventListener('input', e => {
   }, 200);
 });
 
-renderizar();
+cargarServicios();
 </script>
 </body>
 </html>
