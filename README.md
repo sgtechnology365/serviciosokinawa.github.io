@@ -50,7 +50,7 @@ const numAdmin = "59177612322";
 2. Ve a **Settings → Pages**
 3. En "Source" selecciona **Deploy from a branch → main → / (root)**
 4. Guarda y espera 1-2 minutos
-5. Tu catálogo estará en: `https://TU-USUARIO.github.io/NOMBRE-REPO/`
+5. Tu catálogo estará en: `https://sgtechnology365/serviciosokinawa.github.io/serviciosokinawa/`
 
 ---
 
