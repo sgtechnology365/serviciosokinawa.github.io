@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Servicios Okinawa Uno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --verde: #1B8C5A;
+    --verde-claro: #E8F5EE;
+    --verde-oscuro: #0F5C3A;
+    --wa: #25D366;
+    --wa-hover: #1DA851;
+    --texto: #1A1A2E;
+    --texto-suave: #5A5A72;
+    --borde: #E2E8F0;
+    --fondo: #F7F9FC;
+    --blanco: #FFFFFF;
+    --radio: 12px;
+    --sombra: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--verde);
+    color: white;
+    padding: 0;
+  }
+
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 28px 20px 24px;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icono {
+    width: 40px;
+    height: 40px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .logo-texto h1 {
+    font-family: 'Sora', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .logo-texto span {
+    font-size: 12px;
+    opacity: 0.8;
+    font-weight: 400;
+  }
+
+  .btn-registro-header {
+    background: white;
+    color: var(--verde-oscuro);
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .btn-registro-header:hover {
+    background: var(--verde-claro);
+  }
+
+  /* ── BÚSQUEDA ── */
+  .busqueda-wrap {
+    position: relative;
+  }
+
+  .busqueda-wrap svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.6);
+    pointer-events: none;
+  }
+
+  #buscador {
+    width: 100%;
+    padding: 12px 16px 12px 44px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    font-size: 15px;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+  }
+
+  #buscador::placeholder { color: rgba(255,255,255,0.6); }
+  #buscador:focus { background: rgba(255,255,255,0.22); }
+
+  /* ── CATEGORÍAS ── */
+  .cats-bar {
+    background: white;
+    border-bottom: 1px solid var(--borde);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .cats-bar::-webkit-scrollbar { display: none; }
+
+  .cats-inner {
+    display: flex;
+    gap: 6px;
+    padding: 12px 20px;
+    max-width: 960px;
+    margin: 0 auto;
+    min-width: max-content;
+  }
+
+  .cat-btn {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1.5px solid var(--borde);
+    background: white;
+    color: var(--texto-suave);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .15s;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .cat-btn:hover { border-color: var(--verde); color: var(--verde); }
+
+  .cat-btn.activo {
+    background: var(--verde);
+    border-color: var(--verde);
+    color: white;
+  }
+
+  /* ── CONTENIDO PRINCIPAL ── */
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  .stats-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .stats-bar p {
+    font-size: 13px;
+    color: var(--texto-suave);
+  }
+
+  .stats-bar strong { color: var(--texto); }
+
+  /* ── GRID DE TARJETAS ── */
+  #grid-servicios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
+  }
+
+  .tarjeta {
+    background: white;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    overflow: hidden;
+    box-shadow: var(--sombra);
+    transition: transform .15s, box-shadow .15s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tarjeta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  .tarjeta-header {
+    padding: 16px 16px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .tarjeta-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .tarjeta-info { flex: 1; min-width: 0; }
+
+  .tarjeta-nombre {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--texto);
+    margin-bottom: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tarjeta-cat {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.02em;
+  }
+
+  .tarjeta-body {
+    padding: 0 16px 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tarjeta-desc {
+    font-size: 13px;
+    color: var(--texto-suave);
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .tarjeta-dir {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--texto-suave);
+  }
+
+  .tarjeta-dir svg {
+    flex-shrink: 0;
+    margin-top: 2px;
+    color: var(--verde);
+  }
+
+  .btn-wa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--wa);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .15s;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+  }
+
+  .btn-wa:hover { background: var(--wa-hover); }
+
+  /* ── VACÍO ── */
+  #sin-resultados {
+    display: none;
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--texto-suave);
+  }
+
+  #sin-resultados .icono { font-size: 40px; margin-bottom: 12px; }
+  #sin-resultados p { font-size: 14px; }
+
+  /* ── BANNER REGISTRO ── */
+  .banner-registro {
+    background: var(--verde-claro);
+    border: 1.5px solid #B8E0CC;
+    border-radius: var(--radio);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .banner-registro p {
+    font-size: 14px;
+    color: var(--verde-oscuro);
+  }
+
+  .banner-registro strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 3px;
+  }
+
+  .btn-registro-banner {
+    background: var(--verde);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .btn-registro-banner:hover { background: var(--verde-oscuro); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 24px 20px;
+    border-top: 1px solid var(--borde);
+    font-size: 12px;
+    color: var(--texto-suave);
+    background: white;
+  }
+
+  /* ── COLORES POR CATEGORÍA ── */
+  .cat-salud       { background: #FEF0F0; color: #C0392B; }
+  .cat-alimentos   { background: #FFF5E6; color: #E67E22; }
+  .cat-mecanica    { background: #EEF2FF; color: #3B5BDB; }
+  .cat-tecnologia  { background: #F0F0FF; color: #6741D9; }
+  .cat-educacion   { background: #E8F8F0; color: #0F6E56; }
+  .cat-belleza     { background: #FFF0F5; color: #C0397A; }
+  .cat-construccion{ background: #FDF5E6; color: #8B6914; }
+  .cat-transporte  { background: #EAF4FB; color: #1A6FA3; }
+  .cat-comercio    { background: #F0FFF0; color: #2E7D32; }
+  .cat-otros       { background: #F4F4F4; color: #5A5A72; }
+
+  .av-salud       { background: #FEF0F0; }
+  .av-alimentos   { background: #FFF5E6; }
+  .av-mecanica    { background: #EEF2FF; }
+  .av-tecnologia  { background: #F0F0FF; }
+  .av-educacion   { background: #E8F8F0; }
+  .av-belleza     { background: #FFF0F5; }
+  .av-construccion{ background: #FDF5E6; }
+  .av-transporte  { background: #EAF4FB; }
+  .av-comercio    { background: #F0FFF0; }
+  .av-otros       { background: #F4F4F4; }
+
+  @media (max-width: 480px) {
+    .header-inner { padding: 20px 16px 18px; }
+    main { padding: 16px 16px 50px; }
+    #grid-servicios { grid-template-columns: 1fr; }
+    .banner-registro { flex-direction: column; align-items: flex-start; }
+    .btn-registro-banner { width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-top">
+      <div class="logo">
+        <div class="logo-icono">🏘️</div>
+        <div class="logo-texto">
+          <h1>Servicios Okinawa Uno</h1>
+          <span>Directorio comunitario · Santa Cruz, Bolivia</span>
+        </div>
+      </div>
+      <a href="registro.html" class="btn-registro-header">+ Registrar mi servicio</a>
+    </div>
+    <div class="busqueda-wrap">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input type="text" id="buscador" placeholder="Buscar servicio o prestador...">
+    </div>
+  </div>
+</header>
+
+<nav class="cats-bar" role="navigation" aria-label="Categorías">
+  <div class="cats-inner">
+    <button class="cat-btn activo" data-cat="todos">Todos</button>
+    <button class="cat-btn" data-cat="salud">Salud</button>
+    <button class="cat-btn" data-cat="alimentos">Alimentos</button>
+    <button class="cat-btn" data-cat="mecanica">Mecánica</button>
+    <button class="cat-btn" data-cat="tecnologia">Tecnología</button>
+    <button class="cat-btn" data-cat="educacion">Educación</button>
+    <button class="cat-btn" data-cat="belleza">Belleza</button>
+    <button class="cat-btn" data-cat="construccion">Construcción</button>
+    <button class="cat-btn" data-cat="transporte">Transporte</button>
+    <button class="cat-btn" data-cat="comercio">Comercio</button>
+    <button class="cat-btn" data-cat="otros">Otros</button>
+  </div>
+</nav>
+
+<main>
+  <div class="banner-registro">
+    <p>
+      <strong>¿Ofreces un servicio en Okinawa Uno?</strong>
+      Regístrate gratis y aparece en este directorio.
+    </p>
+    <a href="registro.html" class="btn-registro-banner">Registrar mi servicio</a>
+  </div>
+
+  <div class="stats-bar">
+    <p>Mostrando <strong id="contador">0</strong> servicios</p>
+    <p id="cat-activa" style="font-size:13px; color:var(--texto-suave)"></p>
+  </div>
+
+  <div id="grid-servicios">
+    <div id="sin-resultados">
+      <div class="icono">🔍</div>
+      <p>No se encontraron servicios con ese criterio.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Directorio comunitario de Okinawa Uno · Santa Cruz, Bolivia<br>
+  <span style="margin-top:4px; display:block;">¿Quieres aparecer aquí? <a href="registro.html" style="color:var(--verde); font-weight:500;">Registra tu servicio</a></span>
+</footer>
+
+<script>
+// ── DATOS DE SERVICIOS ──
+// Para agregar servicios: copiar un bloque {} y completar los campos.
+// "aprobado: true" = aparece en el catálogo. "false" = oculto.
+const SERVICIOS = [
+  {
+    nombre: "Clínica Santa Rosa",
+    categoria: "salud",
+    emoji: "🩺",
+    descripcion: "Consultas médicas generales y pediatría. Atención lunes a viernes de 7:00 a 12:00 y de 15:00 a 19:00.",
+    direccion: "Av. Beni Nº 45, frente a la plaza principal",
+    whatsapp: "59170000001",
+    aprobado: true
+  },
+  {
+    nombre: "Comedor Doña Carmen",
+    categoria: "alimentos",
+    emoji: "🍽️",
+    descripcion: "Almuerzos del día, sopas y platos a la carta. Menú completo desde Bs. 15. Servicio a domicilio disponible.",
+    direccion: "Calle Comercio, Mz. 3 entre calles 1 y 2",
+    whatsapp: "59170000002",
+    aprobado: true
+  },
+  {
+    nombre: "Taller Don Marcos",
+    categoria: "mecanica",
+    emoji: "🔧",
+    descripcion: "Reparación de motos, autos y maquinaria agrícola. Servicio de cambio de aceite, frenos y electricidad vehicular.",
+    direccion: "Salida norte, km 1.5 sobre la carretera",
+    whatsapp: "59170000003",
+    aprobado: true
+  },
+  {
+    nombre: "TechSoluciones",
+    categoria: "tecnologia",
+    emoji: "💻",
+    descripcion: "Reparación de computadoras, laptops e impresoras. Instalación de redes, configuración de equipos y mantenimiento preventivo.",
+    direccion: "Barrio Centro, frente a la cancha deportiva",
+    whatsapp: "59170000004",
+    aprobado: true
+  },
+  {
+    nombre: "Ferretería El Constructor",
+    categoria: "construccion",
+    emoji: "🏗️",
+    descripcion: "Materiales de construcción, herramientas y pinturas. Entrega a domicilio dentro de Okinawa Uno.",
+    direccion: "Av. Principal Nº 112",
+    whatsapp: "59170000005",
+    aprobado: true
+  },
+  {
+    nombre: "Salón Bellas Manos",
+    categoria: "belleza",
+    emoji: "💅",
+    descripcion: "Corte de cabello, peinados, manicura y pedicura. Atención con cita previa. Servicio a domicilio disponible.",
+    direccion: "Calle 2 de Agosto Nº 28",
+    whatsapp: "59170000006",
+    aprobado: true
+  }
+];
+
+const EMOJIS_CAT = {
+  salud: "🩺", alimentos: "🍽️", mecanica: "🔧", tecnologia: "💻",
+  educacion: "📚", belleza: "💅", construccion: "🏗️", transporte: "🚗",
+  comercio: "🛒", otros: "⭐"
+};
+
+const NOMBRES_CAT = {
+  salud: "Salud", alimentos: "Alimentos", mecanica: "Mecánica",
+  tecnologia: "Tecnología", educacion: "Educación", belleza: "Belleza",
+  construccion: "Construcción", transporte: "Transporte",
+  comercio: "Comercio", otros: "Otros"
+};
+
+let catActiva = "todos";
+let textoBusqueda = "";
+
+function crearTarjeta(s) {
+  const cat = s.categoria || "otros";
+  const nombreCat = NOMBRES_CAT[cat] || "Otros";
+  const telLimpio = s.whatsapp.replace(/\D/g, '');
+  const msgWa = encodeURIComponent(`Hola, vi tu servicio en el directorio de Okinawa Uno y me interesa saber más.`);
+  const urlWa = `https://wa.me/${telLimpio}?text=${msgWa}`;
+
+  return `
+    <article class="tarjeta">
+      <div class="tarjeta-header">
+        <div class="tarjeta-avatar av-${cat}">${s.emoji || EMOJIS_CAT[cat] || '⭐'}</div>
+        <div class="tarjeta-info">
+          <div class="tarjeta-nombre" title="${s.nombre}">${s.nombre}</div>
+          <span class="tarjeta-cat cat-${cat}">${nombreCat}</span>
+        </div>
+      </div>
+      <div class="tarjeta-body">
+        <p class="tarjeta-desc">${s.descripcion}</p>
+        <div class="tarjeta-dir">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            <circle cx="12" cy="9" r="2.5"/>
+          </svg>
+          <span>${s.direccion}</span>
+        </div>
+        <a href="${urlWa}" target="_blank" rel="noopener" class="btn-wa" aria-label="Contactar a ${s.nombre} por WhatsApp">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Contactar por WhatsApp
+        </a>
+      </div>
+    </article>
+  `;
+}
+
+function renderizar() {
+  const grid = document.getElementById('grid-servicios');
+  const sinRes = document.getElementById('sin-resultados');
+  const contador = document.getElementById('contador');
+  const catActivaEl = document.getElementById('cat-activa');
+
+  const filtrados = SERVICIOS.filter(s => {
+    if (!s.aprobado) return false;
+    const coincideCat = catActiva === "todos" || s.categoria === catActiva;
+    const texto = textoBusqueda.toLowerCase().trim();
+    const coincideTexto = !texto ||
+      s.nombre.toLowerCase().includes(texto) ||
+      s.descripcion.toLowerCase().includes(texto) ||
+      s.direccion.toLowerCase().includes(texto) ||
+      (NOMBRES_CAT[s.categoria] || '').toLowerCase().includes(texto);
+    return coincideCat && coincideTexto;
+  });
+
+  // limpiar tarjetas anteriores (dejar solo el div sin-resultados)
+  Array.from(grid.children).forEach(c => {
+    if (c.id !== 'sin-resultados') c.remove();
+  });
+
+  if (filtrados.length === 0) {
+    sinRes.style.display = 'block';
+  } else {
+    sinRes.style.display = 'none';
+    filtrados.forEach(s => {
+      grid.insertAdjacentHTML('beforeend', crearTarjeta(s));
+    });
+  }
+
+  contador.textContent = filtrados.length;
+  catActivaEl.textContent = catActiva !== "todos"
+    ? `en ${NOMBRES_CAT[catActiva] || catActiva}`
+    : "";
+}
+
+// Filtro por categoría
+document.querySelectorAll('.cat-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('activo'));
+    btn.classList.add('activo');
+    catActiva = btn.dataset.cat;
+    renderizar();
+  });
+});
+
+// Búsqueda
+let debounce;
+document.getElementById('buscador').addEventListener('input', e => {
+  clearTimeout(debounce);
+  debounce = setTimeout(() => {
+    textoBusqueda = e.target.value;
+    renderizar();
+  }, 200);
+});
+
+renderizar();
+</script>
+</body>
+</html>
