@@ -36,7 +36,11 @@
 
   /* ── HEADER ── */
   header {
-    background: linear-gradient(155deg, var(--verde-oscuro) 0%, #1D5A3F 100%);
+    background:
+      linear-gradient(175deg, rgba(20,61,44,0.55) 0%, rgba(15,45,32,0.88) 75%),
+      url('assets/okinawa-uno-banner.jpg');
+    background-size: cover;
+    background-position: center 60%;
     color: white;
     padding: 0;
   }
@@ -44,7 +48,7 @@
   .header-inner {
     max-width: 960px;
     margin: 0 auto;
-    padding: 14px 16px 12px;
+    padding: 18px 16px 16px;
   }
 
   .header-top {
@@ -82,12 +86,14 @@
     line-height: 1.2;
     letter-spacing: -0.01em;
     white-space: nowrap;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.35);
   }
 
   .logo-texto span {
     font-size: 11px;
-    opacity: 0.75;
+    opacity: 0.85;
     font-weight: 400;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.35);
   }
 
   .btn-registro-header {
@@ -337,14 +343,34 @@
     gap: 5px;
   }
 
+  .tarjeta-nombre-mask {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+  }
+
   .tarjeta-nombre {
     font-family: 'Fraunces', serif;
     font-weight: 600;
     font-size: 15px;
     color: var(--texto);
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: inline-block;
+  }
+
+  .tarjeta-nombre-mask:hover .tarjeta-nombre,
+  .tarjeta-nombre-mask:focus-visible .tarjeta-nombre { color: var(--verde-oscuro); }
+
+  .tarjeta-nombre.marquee {
+    animation: marqueeNombre linear infinite;
+  }
+
+  @keyframes marqueeNombre {
+    0%, 12% { transform: translateX(0); }
+    45%, 55% { transform: translateX(var(--desplazamiento, 0)); }
+    88%, 100% { transform: translateX(0); }
   }
 
   .estrella-patrocinado {
@@ -469,6 +495,102 @@
   .av-comercio    { background: #F0FFF0; }
   .av-otros       { background: #F4F4F4; }
 
+  /* ── MODAL DE DETALLE ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,30,22,0.55);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+    opacity: 1;
+    transition: opacity .18s ease;
+  }
+
+  .modal-overlay.oculto { display: none; }
+
+  .modal-caja {
+    background: white;
+    border-radius: 18px 18px 0 0;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 20px 20px 26px;
+    animation: modalSubir .22s ease;
+  }
+
+  @media (min-width: 640px) {
+    .modal-overlay { align-items: center; }
+    .modal-caja { border-radius: 18px; margin: 20px; }
+  }
+
+  @keyframes modalSubir {
+    from { transform: translateY(24px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .modal-cerrar {
+    float: right;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: var(--fondo);
+    color: var(--texto-suave);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .modal-cerrar:hover { background: var(--borde); }
+
+  .modal-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .modal-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+
+  .modal-nombre {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.25;
+    margin-bottom: 4px;
+  }
+
+  .modal-desc {
+    font-size: 13.5px;
+    color: var(--texto-suave);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .modal-dir {
+    display: flex;
+    align-items: flex-start;
+    gap: 7px;
+    font-size: 13px;
+    color: var(--texto-suave);
+    margin-bottom: 18px;
+  }
+
+  .modal-dir svg { flex-shrink: 0; margin-top: 2px; color: var(--verde); }
+
   @media (max-width: 480px) {
     .header-inner { padding: 20px 16px 18px; }
     main { padding: 16px 16px 50px; }
@@ -542,12 +664,21 @@
   </div>
 </main>
 
+<div class="modal-overlay oculto" id="modal-overlay">
+  <div class="modal-caja" id="modal-caja" role="dialog" aria-modal="true">
+    <button type="button" class="modal-cerrar" id="modal-cerrar" aria-label="Cerrar">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div id="modal-contenido"></div>
+  </div>
+</div>
+
 <footer>
   Directorio comunitario de Okinawa Uno · Santa Cruz, Bolivia<br>
   <span style="margin-top:4px; display:block;">
     ¿Quieres aparecer aquí? <a href="registro.html" style="color:var(--verde); font-weight:500;">Registra tu servicio</a>
     ·
-    <!-- <a href="patrocinar.html" style="color:var(--oro-oscuro, #8A6412); font-weight:500;">Destaca tu negocio</a> -->
+    <a href="patrocinar.html" style="color:var(--oro-oscuro, #8A6412); font-weight:500;">Destaca tu negocio</a>
   </span>
 </footer>
 
@@ -772,7 +903,7 @@ async function cargarServicios() {
   }
 }
 
-function crearTarjeta(s) {
+function crearTarjeta(s, idx) {
   const cat = s.categoria || "otros";
   const nombreCat = NOMBRES_CAT[cat] || "Otros";
   const telLimpio = s.whatsapp.replace(/\D/g, '');
@@ -787,7 +918,7 @@ function crearTarjeta(s) {
   const textoBotonWa = s.patrocinado ? formatearNumero(s.whatsapp) : 'Contactar por WhatsApp';
 
   return `
-    <article class="tarjeta${claseExtra}">
+    <article class="tarjeta${claseExtra}" data-idx="${idx}">
       <div class="tarjeta-header">
         <div class="tarjeta-avatar-col">
           <div class="tarjeta-avatar av-${cat}">${s.emoji || EMOJIS_CAT[cat] || '⭐'}</div>
@@ -795,7 +926,9 @@ function crearTarjeta(s) {
         </div>
         <div class="tarjeta-info">
           <div class="tarjeta-nombre-fila">
-            <span class="tarjeta-nombre" title="${s.nombre}">${s.nombre}</span>
+            <span class="tarjeta-nombre-mask js-abrir-detalle" role="button" tabindex="0" aria-label="Ver detalle de ${s.nombre}">
+              <span class="tarjeta-nombre">${s.nombre}</span>
+            </span>
             ${estrella}
           </div>
           <p class="tarjeta-desc">${s.descripcion}</p>
@@ -827,6 +960,28 @@ function crearTarjeta(s) {
       </div>
     </article>
   `;
+}
+
+// Revisa cada nombre de tarjeta: si el texto no cabe en su espacio,
+// activa un desplazamiento tipo carrusel para poder leerlo completo.
+function ajustarNombresLargos() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.tarjeta-nombre-mask').forEach(mask => {
+      const texto = mask.querySelector('.tarjeta-nombre');
+      if (!texto) return;
+      texto.classList.remove('marquee');
+      texto.style.removeProperty('--desplazamiento');
+      texto.style.removeProperty('animation-duration');
+
+      const desbordeoPx = texto.scrollWidth - mask.clientWidth;
+      if (desbordeoPx > 4) {
+        texto.style.setProperty('--desplazamiento', `-${desbordeoPx}px`);
+        const duracion = Math.max(3.5, desbordeoPx / 22);
+        texto.style.animationDuration = `${duracion}s`;
+        texto.classList.add('marquee');
+      }
+    });
+  });
 }
 
 // Formatea el número boliviano quitando el 591 y agrupando en pares (ej: 7761 2322)
@@ -862,15 +1017,18 @@ function renderizar() {
   const cargandoMsg = document.getElementById('cargando-msg');
   if (cargandoMsg) cargandoMsg.remove();
 
+  window.ultimosFiltrados = filtrados;
+
   if (filtrados.length === 0) {
     sinRes.style.display = 'block';
   } else {
     sinRes.style.display = 'none';
-    filtrados.forEach(s => {
-      grid.insertAdjacentHTML('beforeend', crearTarjeta(s));
+    filtrados.forEach((s, idx) => {
+      grid.insertAdjacentHTML('beforeend', crearTarjeta(s, idx));
     });
   }
 
+  ajustarNombresLargos();
 }
 
 // ── BUSCADOR COLAPSABLE ──
@@ -904,6 +1062,85 @@ function renderizar() {
 
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') { input.value = ''; textoBusqueda = ''; renderizar(); cerrar(); }
+  });
+})();
+
+// ── MODAL DE DETALLE ──
+(function initModalDetalle() {
+  const overlay = document.getElementById('modal-overlay');
+  const caja = document.getElementById('modal-caja');
+  const contenido = document.getElementById('modal-contenido');
+  const btnCerrar = document.getElementById('modal-cerrar');
+  const grid = document.getElementById('grid-servicios');
+  if (!overlay || !contenido || !grid) return;
+
+  function abrirModal(servicio) {
+    const cat = servicio.categoria || 'otros';
+    const nombreCat = NOMBRES_CAT[cat] || 'Otros';
+    const telLimpio = servicio.whatsapp.replace(/\D/g, '');
+    const msgWa = encodeURIComponent(`Hola, vi tu servicio en el directorio de Okinawa Uno y me interesa saber más.`);
+    const urlWa = `https://wa.me/${telLimpio}?text=${msgWa}`;
+    const mostrarUbicacion = servicio.patrocinado && servicio.ubicacionUrl;
+
+    contenido.innerHTML = `
+      <div class="modal-header">
+        <div class="modal-avatar av-${cat}">${servicio.emoji || EMOJIS_CAT[cat] || '⭐'}</div>
+        <div>
+          <div class="modal-nombre">${servicio.nombre}${servicio.patrocinado ? ' <i class="estrella-patrocinado" style="font-size:15px">★</i>' : ''}</div>
+          <span class="tarjeta-cat-mini cat-${cat}" style="background:transparent;padding:0;">${nombreCat}</span>
+        </div>
+      </div>
+      <p class="modal-desc">${servicio.descripcion}</p>
+      <div class="modal-dir">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
+        </svg>
+        <span>${servicio.direccion}</span>
+      </div>
+      <div class="fila-botones">
+        <a href="${urlWa}" target="_blank" rel="noopener" class="btn-wa">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          <span>Contactar por WhatsApp</span>
+        </a>
+        ${mostrarUbicacion ? `
+        <a href="${servicio.ubicacionUrl}" target="_blank" rel="noopener" class="btn-ubicacion" title="Ver ubicación en el mapa">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
+          </svg>
+        </a>` : ''}
+      </div>
+    `;
+    overlay.classList.remove('oculto');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function cerrarModal() {
+    overlay.classList.add('oculto');
+    document.body.style.overflow = '';
+  }
+
+  // Delegación: cualquier click en el nombre de una tarjeta abre el modal
+  grid.addEventListener('click', (e) => {
+    const disparador = e.target.closest('.js-abrir-detalle');
+    if (!disparador) return;
+    const idx = disparador.closest('.tarjeta')?.dataset.idx;
+    const servicio = window.ultimosFiltrados?.[idx];
+    if (servicio) abrirModal(servicio);
+  });
+
+  grid.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('js-abrir-detalle')) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+
+  btnCerrar.addEventListener('click', cerrarModal);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) cerrarModal(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !overlay.classList.contains('oculto')) cerrarModal();
   });
 })();
 
