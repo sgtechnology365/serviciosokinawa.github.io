@@ -684,9 +684,10 @@
 
 <script>
 // ── CONEXIÓN A GOOGLE SHEETS ──
-// El ID se obtiene de la URL de tu hoja: .../d/ESTE_ID/edit
-const SHEET_ID = "1oiMp_LlbdEGNIkoQgwSPaeh8k6JdAW2to0gzNNacycM";
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+// Apunta a la hoja PÚBLICA (pestaña "Servicios"), no a la privada de respuestas.
+const SHEET_ID = "1SonJPnEY--sY3v9pPjkKEDyNXid8CXILhztTf3cAOKQ";
+const SERVICIOS_GID = "0";
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SERVICIOS_GID}`;
 
 // Orden de columnas en la hoja: Timestamp, Nombre, Categoría, Descripción, WhatsApp, Dirección, Propietario, aprobado
 // Mapea el texto de categoría (como llega del formulario) al código interno usado para colores/filtros
