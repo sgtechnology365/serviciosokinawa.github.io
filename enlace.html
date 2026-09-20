@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<!-- viewport optimizado para móvil, sin zoom accidental -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conectando con WhatsApp...</title>
+
+<style>
+  /*
+    NOTA DE RENDIMIENTO:
+    Esta página NO carga fuentes externas (Google Fonts) ni librerías.
+    Usa las fuentes ya instaladas en el celular del usuario (system-ui).
+    Esto es intencional: en conexiones rurales/lentas de Bolivia, cada
+    petición extra de red retrasa la carga. Todo el CSS y JS está en
+    este mismo archivo (sin dependencias externas) para que cargue
+    prácticamente instantáneo incluso con señal débil.
+  */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --verde-oscuro: #143D2C;
+    --verde: #2C7A54;
+    --oro: #C89B3C;
+    --oro-claro: #FAF1DE;
+    --texto: #191E1B;
+    --texto-suave: #5B6460;
+    --fondo: #F7F8F5;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--verde-oscuro);
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+  }
+
+  /* ── CUENTA REGRESIVA ── */
+  .contador-circulo {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 700;
+    margin: 0 auto 14px;
+    position: relative;
+  }
+
+  /* Anillo de progreso: se dibuja con conic-gradient, sin SVG ni JS de canvas */
+  .contador-anillo {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: conic-gradient(var(--oro) calc(var(--progreso, 0) * 1%), transparent 0);
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+    transition: background 0.3s linear;
+  }
+
+  .texto-espera {
+    font-size: 13.5px;
+    opacity: 0.85;
+    margin-bottom: 28px;
+  }
+
+  /* ── TARJETA DE BANNER PUBLICITARIO ── */
+  .banner {
+    background: white;
+    color: var(--texto);
+    border-radius: 16px;
+    padding: 22px 20px;
+    max-width: 360px;
+    width: 100%;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  }
+
+  .banner-etiqueta {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #8A6412;
+    background: var(--oro-claro);
+    border: 1px solid #E4C878;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    letter-spacing: 0.03em;
+  }
+
+  .banner-icono {
+    font-size: 34px;
+    margin-bottom: 8px;
+  }
+
+  .banner-titulo {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .banner-desc {
+    font-size: 13.5px;
+    color: var(--texto-suave);
+    line-height: 1.5;
+  }
+
+  .banner-imagen {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  /* ── MENSAJE DE ERROR (si faltan datos en la URL) ── */
+  .error-caja {
+    background: white;
+    color: var(--texto);
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 340px;
+  }
+
+  .error-caja a {
+    display: inline-block;
+    margin-top: 14px;
+    background: var(--verde);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Este contenedor se llena por JavaScript según si los datos de la URL son válidos -->
+<div id="contenedor">
+  <div class="contador-circulo">
+    <div class="contador-anillo" id="anillo"></div>
+    <span id="numero-contador">5</span>
+  </div>
+  <p class="texto-espera">Conectando con el prestador del servicio...</p>
+
+  <div class="banner" id="banner"></div>
+</div>
+
+<!-- Respaldo si el navegador tiene JavaScript desactivado (poco común, pero por si acaso) -->
+<noscript>
+  <p>Para continuar, habilita JavaScript o contacta directamente por WhatsApp usando el enlace que te compartieron.</p>
+</noscript>
+
+<script>
+  /* ============================================================
+     PASO 1: Leer los datos que vienen en la URL
+     Ejemplo de URL esperada:
+     enlace.html?tel=59177612322&msg=Hola%2C%20quiero%20info
+     ============================================================ */
+  const parametros = new URLSearchParams(window.location.search);
+  const telefono = (parametros.get('tel') || '').replace(/\D/g, ''); // solo dígitos
+  const mensaje = parametros.get('msg') || '';
+
+  const contenedor = document.getElementById('contenedor');
+
+  /* ============================================================
+     PASO 2: Validar que al menos el teléfono exista.
+     Si falta, no tiene sentido mostrar cuenta regresiva: se avisa
+     al usuario y se detiene el script aquí (return implícito).
+     ============================================================ */
+  if (!telefono || telefono.length < 7) {
+    contenedor.innerHTML = `
+      <div class="error-caja">
+        <div class="banner-icono">⚠️</div>
+        <div class="banner-titulo">Enlace incompleto</div>
+        <p class="banner-desc">Falta el número de contacto en este enlace. Vuelve al directorio e intenta de nuevo.</p>
+        <a href="index.html">Volver al catálogo</a>
+      </div>
+    `;
+    // Detenemos aquí: no seguimos al resto del script (cuenta regresiva, etc.)
+    throw new Error('Falta el parámetro "tel" en la URL');
+  }
+
+  /* ============================================================
+     PASO 3: Traer los banners en vivo desde una pestaña de Google
+     Sheets. Así Santos agrega, edita o apaga anunciantes editando
+     la hoja de cálculo — sin tocar este código nunca.
+
+     Columnas esperadas en la pestaña "Banners":
+     titulo | descripcion | icono | imagen_url | enlace | activo | vence
+     ============================================================ */
+  const SHEET_ID = "1oiMp_LlbdEGNIkoQgwSPaeh8k6JdAW2to0gzNNacycM";
+  const BANNERS_GID = "611151831";
+  const BANNERS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${BANNERS_GID}`;
+
+  const BANNER_POR_DEFECTO = {
+    icono: "📢",
+    titulo: "¿Quieres anunciarte aquí?",
+    descripcion: "Los negocios patrocinados se contactan al instante, sin espera. Consulta los planes.",
+    enlace: "patrocinar.html"
+  };
+
+  // Parser CSV simple que respeta comillas y comas dentro de un campo
+  function parseCSV(texto) {
+    const filas = [];
+    let fila = [], campo = '', dentroComillas = false;
+    for (let i = 0; i < texto.length; i++) {
+      const c = texto[i], sig = texto[i + 1];
+      if (dentroComillas) {
+        if (c === '"' && sig === '"') { campo += '"'; i++; }
+        else if (c === '"') { dentroComillas = false; }
+        else { campo += c; }
+      } else {
+        if (c === '"') { dentroComillas = true; }
+        else if (c === ',') { fila.push(campo); campo = ''; }
+        else if (c === '\n' || c === '\r') {
+          if (campo !== '' || fila.length > 0) { fila.push(campo); filas.push(fila); fila = []; campo = ''; }
+          if (c === '\r' && sig === '\n') i++;
+        } else { campo += c; }
+      }
+    }
+    if (campo !== '' || fila.length > 0) { fila.push(campo); filas.push(fila); }
+    return filas;
+  }
+
+  function normalizar(t) {
+    return (t || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  function buscarColumna(encabezados, palabra) {
+    return encabezados.findIndex(h => normalizar(h).includes(palabra));
+  }
+
+  // Convierte las filas del CSV en objetos banner, ubicando cada
+  // dato por el NOMBRE de la columna (no por posición), para que
+  // el orden de las columnas en la hoja pueda cambiar sin romper nada.
+  function filasABanners(filas) {
+    const encabezados = filas[0] || [];
+    const idx = {
+      titulo: buscarColumna(encabezados, 'titulo'),
+      descripcion: buscarColumna(encabezados, 'descripcion'),
+      icono: buscarColumna(encabezados, 'icono'),
+      imagen: buscarColumna(encabezados, 'imagen'),
+      enlace: buscarColumna(encabezados, 'enlace'),
+      activo: buscarColumna(encabezados, 'activo'),
+      vence: buscarColumna(encabezados, 'vence')
+    };
+    const val = (fila, campo) => (idx[campo] >= 0 && fila[idx[campo]] !== undefined) ? fila[idx[campo]].trim() : '';
+
+    return filas.slice(1)
+      .filter(f => f.length > 0 && val(f, 'titulo'))
+      .map(f => {
+        const vence = val(f, 'vence');
+        let vigente = val(f, 'activo').toUpperCase() === 'TRUE';
+        if (vigente && vence) {
+          const fechaVence = new Date(vence + 'T23:59:59');
+          if (!isNaN(fechaVence) && fechaVence < new Date()) vigente = false;
+        }
+        return {
+          titulo: val(f, 'titulo'),
+          descripcion: val(f, 'descripcion'),
+          icono: val(f, 'icono'),
+          imagen: val(f, 'imagen'),
+          enlace: val(f, 'enlace'),
+          activo: vigente
+        };
+      })
+      .filter(b => b.activo);
+  }
+
+  function pintarBanner(bannerElegido) {
+    const bannerEl = document.getElementById('banner');
+    bannerEl.innerHTML = `
+      <span class="banner-etiqueta">Publicidad</span>
+      ${bannerElegido.imagen ? `<img src="${bannerElegido.imagen}" alt="${bannerElegido.titulo}" class="banner-imagen">` : `<div class="banner-icono">${bannerElegido.icono || '📢'}</div>`}
+      <div class="banner-titulo">${bannerElegido.titulo}</div>
+      <p class="banner-desc">${bannerElegido.descripcion}</p>
+    `;
+    if (bannerElegido.enlace) {
+      bannerEl.style.cursor = 'pointer';
+      bannerEl.addEventListener('click', () => window.open(bannerElegido.enlace, '_blank'));
+    }
+  }
+
+  // Muestra de entrada el banner por defecto (para no dejar el espacio
+  // vacío mientras carga), y lo reemplaza si llega uno real a tiempo.
+  pintarBanner(BANNER_POR_DEFECTO);
+
+  // Protección: si la conexión es muy lenta, no dejamos que la
+  // búsqueda del banner atrase la cuenta regresiva ni la redirección.
+  const TIEMPO_MAXIMO_ESPERA = 3000; // milisegundos
+  const tiempoLimite = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('tiempo agotado')), TIEMPO_MAXIMO_ESPERA)
+  );
+
+  Promise.race([fetch(BANNERS_URL, { cache: 'no-store' }), tiempoLimite])
+    .then(resp => resp.text())
+    .then(texto => {
+      const banners = filasABanners(parseCSV(texto));
+      if (banners.length > 0) {
+        const elegido = banners[Math.floor(Math.random() * banners.length)];
+        pintarBanner(elegido);
+      }
+      // Si no hay banners activos, se queda el de por defecto ya pintado.
+    })
+    .catch(() => {
+      // Sin conexión a tiempo o error: no pasa nada, ya se ve el banner por defecto.
+    });
+
+  /* ============================================================
+     PASO 5: Armar el enlace final de WhatsApp con el número y
+     el mensaje ya codificados correctamente para una URL.
+     ============================================================ */
+  const urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+
+  /* ============================================================
+     PASO 6: Cuenta regresiva de 5 segundos.
+     Cada segundo: baja el número, actualiza el anillo visual
+     (usando la variable CSS --progreso) y al llegar a 0 redirige.
+     No hay botón de "saltar" — es intencional para este plan gratuito.
+     ============================================================ */
+  const TOTAL_SEGUNDOS = 5;
+  let segundosRestantes = TOTAL_SEGUNDOS;
+
+  const numeroEl = document.getElementById('numero-contador');
+  const anilloEl = document.getElementById('anillo');
+
+  function actualizarContador() {
+    numeroEl.textContent = segundosRestantes;
+    const progreso = ((TOTAL_SEGUNDOS - segundosRestantes) / TOTAL_SEGUNDOS) * 100;
+    anilloEl.style.setProperty('--progreso', progreso);
+  }
+
+  actualizarContador(); // pinta el estado inicial (5, anillo vacío)
+
+  const intervalo = setInterval(() => {
+    segundosRestantes--;
+
+    if (segundosRestantes <= 0) {
+      clearInterval(intervalo);
+      // Redirección final hacia WhatsApp
+      window.location.href = urlWhatsApp;
+    } else {
+      actualizarContador();
+    }
+  }, 1000);
+</script>
+</body>
+</html>

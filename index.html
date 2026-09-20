@@ -678,7 +678,7 @@
   <span style="margin-top:4px; display:block;">
     ¿Quieres aparecer aquí? <a href="registro.html" style="color:var(--verde); font-weight:500;">Registra tu servicio</a>
     ·
-    <!-- <a href="patrocinar.html" style="color:var(--oro-oscuro, #8A6412); font-weight:500;">Destaca tu negocio</a> -->
+    <a href="patrocinar.html" style="color:var(--oro-oscuro, #8A6412); font-weight:500;">Destaca tu negocio</a>
   </span>
 </footer>
 
@@ -907,8 +907,12 @@ function crearTarjeta(s, idx) {
   const cat = s.categoria || "otros";
   const nombreCat = NOMBRES_CAT[cat] || "Otros";
   const telLimpio = s.whatsapp.replace(/\D/g, '');
-  const msgWa = encodeURIComponent(`Hola, vi tu servicio en el directorio de Okinawa Uno y me interesa saber más.`);
-  const urlWa = `https://wa.me/${telLimpio}?text=${msgWa}`;
+  const mensajeWa = `Hola, vi tu servicio en el directorio de Okinawa Uno y me interesa saber más.`;
+  // Patrocinados: contacto directo e instantáneo (beneficio de pagar).
+  // Gratuitos: pasan por enlace.html, que muestra un banner de 5 segundos antes de redirigir.
+  const urlWa = s.patrocinado
+    ? `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensajeWa)}`
+    : `enlace.html?tel=${telLimpio}&msg=${encodeURIComponent(mensajeWa)}`;
 
   const claseExtra = s.patrocinado ? ' patrocinada' : '';
   const estrella = s.patrocinado
@@ -1078,8 +1082,10 @@ function renderizar() {
     const cat = servicio.categoria || 'otros';
     const nombreCat = NOMBRES_CAT[cat] || 'Otros';
     const telLimpio = servicio.whatsapp.replace(/\D/g, '');
-    const msgWa = encodeURIComponent(`Hola, vi tu servicio en el directorio de Okinawa Uno y me interesa saber más.`);
-    const urlWa = `https://wa.me/${telLimpio}?text=${msgWa}`;
+    const mensajeWa = `Hola, vi tu servicio en el directorio de Okinawa Uno y me interesa saber más.`;
+    const urlWa = servicio.patrocinado
+      ? `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensajeWa)}`
+      : `enlace.html?tel=${telLimpio}&msg=${encodeURIComponent(mensajeWa)}`;
     const mostrarUbicacion = servicio.patrocinado && servicio.ubicacionUrl;
 
     contenido.innerHTML = `
