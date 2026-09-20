@@ -82,6 +82,7 @@
     max-width: 360px;
     width: 100%;
     box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    transition: opacity 0.16s ease;
   }
 
   .banner-etiqueta {
@@ -199,6 +200,11 @@
      Columnas esperadas en la pestaña "Banners":
      titulo | descripcion | icono | imagen_url | enlace | activo | vence
      ============================================================ */
+
+  // Duración total de la cuenta regresiva (se usa aquí para repartir
+  // el tiempo entre los banners del carrusel, y más abajo para el reloj).
+  const TOTAL_SEGUNDOS = 10;
+
   const SHEET_ID = "1SonJPnEY--sY3v9pPjkKEDyNXid8CXILhztTf3cAOKQ";
   const BANNERS_GID = "1017315612";
   const BANNERS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${BANNERS_GID}`;
@@ -278,26 +284,69 @@
       .filter(b => b.activo);
   }
 
+  const bannerEl = document.getElementById('banner');
+  let intervaloCarrusel = null;
+
+  // Dibuja un banner con una pequeña transición de opacidad (sin librerías).
   function pintarBanner(bannerElegido) {
-    const bannerEl = document.getElementById('banner');
-    bannerEl.innerHTML = `
-      <span class="banner-etiqueta">Publicidad</span>
-      ${bannerElegido.imagen ? `<img src="${bannerElegido.imagen}" alt="${bannerElegido.titulo}" class="banner-imagen">` : `<div class="banner-icono">${bannerElegido.icono || '📢'}</div>`}
-      <div class="banner-titulo">${bannerElegido.titulo}</div>
-      <p class="banner-desc">${bannerElegido.descripcion}</p>
-    `;
-    if (bannerElegido.enlace) {
-      bannerEl.style.cursor = 'pointer';
-      bannerEl.addEventListener('click', () => window.open(bannerElegido.enlace, '_blank'));
+    bannerEl.style.opacity = '0';
+    setTimeout(() => {
+      bannerEl.innerHTML = `
+        <span class="banner-etiqueta">Publicidad</span>
+        ${bannerElegido.imagen ? `<img src="${bannerElegido.imagen}" alt="${bannerElegido.titulo}" class="banner-imagen">` : `<div class="banner-icono">${bannerElegido.icono || '📢'}</div>`}
+        <div class="banner-titulo">${bannerElegido.titulo}</div>
+        <p class="banner-desc">${bannerElegido.descripcion}</p>
+      `;
+      if (bannerElegido.enlace) {
+        bannerEl.style.cursor = 'pointer';
+        bannerEl.onclick = () => window.open(bannerElegido.enlace, '_blank');
+      } else {
+        bannerEl.style.cursor = 'default';
+        bannerEl.onclick = null;
+      }
+      bannerEl.style.opacity = '1';
+    }, 160);
+  }
+
+  // Revuelve un arreglo (Fisher-Yates) para elegir anuncios al azar en cada visita
+  function mezclar(arr) {
+    const copia = arr.slice();
+    for (let i = copia.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copia[i], copia[j]] = [copia[j], copia[i]];
+    }
+    return copia;
+  }
+
+  // Arranca (o reinicia) el carrusel: muestra hasta 3 banners distintos,
+  // repartiendo el tiempo total de la cuenta regresiva entre ellos.
+  const MAX_BANNERS_EN_ROTACION = 3;
+
+  function iniciarCarrusel(listaBanners) {
+    if (intervaloCarrusel) clearInterval(intervaloCarrusel);
+
+    const seleccion = listaBanners.length > 0
+      ? mezclar(listaBanners).slice(0, MAX_BANNERS_EN_ROTACION)
+      : [BANNER_POR_DEFECTO];
+
+    let posicion = 0;
+    pintarBanner(seleccion[posicion]);
+
+    if (seleccion.length > 1) {
+      const duracionPorBanner = (TOTAL_SEGUNDOS * 1000) / seleccion.length;
+      intervaloCarrusel = setInterval(() => {
+        posicion = (posicion + 1) % seleccion.length;
+        pintarBanner(seleccion[posicion]);
+      }, duracionPorBanner);
     }
   }
 
   // Muestra de entrada el banner por defecto (para no dejar el espacio
-  // vacío mientras carga), y lo reemplaza si llega uno real a tiempo.
-  pintarBanner(BANNER_POR_DEFECTO);
+  // vacío mientras carga), y arranca el carrusel real si llegan datos a tiempo.
+  iniciarCarrusel([]);
 
   // Protección: si la conexión es muy lenta, no dejamos que la
-  // búsqueda del banner atrase la cuenta regresiva ni la redirección.
+  // búsqueda de banners atrase la cuenta regresiva ni la redirección.
   const TIEMPO_MAXIMO_ESPERA = 3000; // milisegundos
   const tiempoLimite = new Promise((_, reject) =>
     setTimeout(() => reject(new Error('tiempo agotado')), TIEMPO_MAXIMO_ESPERA)
@@ -307,10 +356,7 @@
     .then(resp => resp.text())
     .then(texto => {
       const banners = filasABanners(parseCSV(texto));
-      if (banners.length > 0) {
-        const elegido = banners[Math.floor(Math.random() * banners.length)];
-        pintarBanner(elegido);
-      }
+      if (banners.length > 0) iniciarCarrusel(banners);
       // Si no hay banners activos, se queda el de por defecto ya pintado.
     })
     .catch(() => {
@@ -324,12 +370,11 @@
   const urlWhatsApp = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
 
   /* ============================================================
-     PASO 6: Cuenta regresiva de 5 segundos.
+     PASO 6: Cuenta regresiva (TOTAL_SEGUNDOS, definido arriba).
      Cada segundo: baja el número, actualiza el anillo visual
      (usando la variable CSS --progreso) y al llegar a 0 redirige.
      No hay botón de "saltar" — es intencional para este plan gratuito.
      ============================================================ */
-  const TOTAL_SEGUNDOS = 5;
   let segundosRestantes = TOTAL_SEGUNDOS;
 
   const numeroEl = document.getElementById('numero-contador');
