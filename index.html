@@ -564,6 +564,16 @@ function parseCSV(texto) {
   return filas;
 }
 
+// Mezcla el array en su lugar (algoritmo Fisher-Yates) para que el orden
+// de los servicios dentro de cada categoría cambie en cada carga de página.
+function mezclarAleatorio(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
 function filaAServicio(cols) {
   // cols: [Timestamp, Nombre, Categoría, Descripción, WhatsApp, Dirección, Propietario, aprobado]
   const catTexto = (cols[2] || '').trim().toLowerCase();
@@ -594,6 +604,9 @@ async function cargarServicios() {
     SERVICIOS = filas.slice(1)
       .filter(f => f.length >= 8 && f[1] && f[1].trim())
       .map(filaAServicio);
+
+    // Orden aleatorio en cada carga: nadie aparece siempre primero
+    mezclarAleatorio(SERVICIOS);
 
     renderizar();
   } catch (err) {
