@@ -620,15 +620,58 @@ function mezclarAleatorio(arr) {
   return arr;
 }
 
-function filaAServicio(cols) {
-  // cols: [Timestamp, Nombre, Categoría, Descripción, WhatsApp, Dirección, Propietario, aprobado, patrocinado, vence, ubicacion_url]
-  const catTexto = (cols[2] || '').trim().toLowerCase();
+// Quita tildes y pasa a minúsculas, para comparar encabezados sin
+// depender de mayúsculas/acentos exactos.
+function normalizar(texto) {
+  return (texto || '')
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+}
+
+// Busca, dentro de la fila de encabezados, la columna cuyo texto contiene
+// TODAS las palabras clave dadas. Devuelve el índice o -1 si no la encuentra.
+function buscarColumna(encabezados, ...palabrasClave) {
+  for (let i = 0; i < encabezados.length; i++) {
+    const h = normalizar(encabezados[i]);
+    if (palabrasClave.every(p => h.includes(p))) return i;
+  }
+  return -1;
+}
+
+// Construye el mapa de qué columna corresponde a cada dato, leyendo los
+// encabezados reales de la hoja. Así el orden de las columnas en Sheets
+// puede cambiar (agregar, mover, reordenar) sin romper el catálogo.
+function construirMapaColumnas(encabezados) {
+  return {
+    nombre:      buscarColumna(encabezados, 'nombre', 'servicio'),
+    categoria:   buscarColumna(encabezados, 'categoria'),
+    descripcion: buscarColumna(encabezados, 'descripcion'),
+    whatsapp:    buscarColumna(encabezados, 'whatsapp'),
+    direccion:   buscarColumna(encabezados, 'direccion'),
+    propietario: buscarColumna(encabezados, 'tu nombre'),
+    aprobado:    buscarColumna(encabezados, 'aprobado'),
+    patrocinado: buscarColumna(encabezados, 'patrocinado'),
+    vence:       buscarColumna(encabezados, 'vence'),
+    ubicacion:   buscarColumna(encabezados, 'ubicacion')
+  };
+}
+
+function filaAServicio(cols, mapa) {
+  const val = (clave) => {
+    const i = mapa[clave];
+    return (i >= 0 && cols[i] !== undefined) ? cols[i].trim() : '';
+  };
+
+  const catTexto = val('categoria').toLowerCase();
   const catCodigo = MAPA_CATEGORIAS[catTexto] || 'otros';
-  let telefono = (cols[4] || '').trim().replace(/\D/g, '');
+  let telefono = val('whatsapp').replace(/\D/g, '');
   if (telefono && !telefono.startsWith('591')) telefono = '591' + telefono;
 
-  const marcadoPatrocinado = (cols[8] || '').trim().toUpperCase() === 'TRUE';
-  const fechaVenceTexto = (cols[9] || '').trim();
+  const marcadoPatrocinado = val('patrocinado').toUpperCase() === 'TRUE';
+  const fechaVenceTexto = val('vence');
   let patrocinadoVigente = marcadoPatrocinado;
 
   // Si hay fecha de vencimiento y ya pasó, el patrocinio se desactiva solo
@@ -640,15 +683,15 @@ function filaAServicio(cols) {
   }
 
   return {
-    nombre: (cols[1] || '').trim(),
+    nombre: val('nombre'),
     categoria: catCodigo,
     emoji: EMOJIS_CAT[catCodigo] || '⭐',
-    descripcion: (cols[3] || '').trim(),
-    direccion: (cols[5] || '').trim(),
+    descripcion: val('descripcion'),
+    direccion: val('direccion'),
     whatsapp: telefono,
-    aprobado: (cols[7] || '').trim().toUpperCase() === 'TRUE',
+    aprobado: val('aprobado').toUpperCase() === 'TRUE',
     patrocinado: patrocinadoVigente,
-    ubicacionUrl: (cols[10] || '').trim()
+    ubicacionUrl: val('ubicacion')
   };
 }
 
@@ -681,10 +724,18 @@ async function cargarServicios() {
     const texto = await resp.text();
     const filas = parseCSV(texto);
 
-    // La primera fila es encabezado, se ignora
+    // La primera fila son los encabezados: se usan para ubicar cada columna por nombre
+    const encabezados = filas[0] || [];
+    const mapaColumnas = construirMapaColumnas(encabezados);
+
+    Object.entries(mapaColumnas).forEach(([campo, indice]) => {
+      if (indice === -1) console.warn(`No se encontró la columna "${campo}" en la hoja. Encabezados detectados:`, encabezados);
+    });
+
     SERVICIOS = filas.slice(1)
-      .filter(f => f.length >= 8 && f[1] && f[1].trim())
-      .map(filaAServicio);
+      .filter(f => f.length > 0 && f.join('').trim() !== '')
+      .map(f => filaAServicio(f, mapaColumnas))
+      .filter(s => s.nombre);
 
     // Máximo 1 patrocinado por categoría
     limitarPatrocinadosPorCategoria(SERVICIOS);
