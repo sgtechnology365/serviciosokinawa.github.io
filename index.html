@@ -108,9 +108,34 @@
     background: #DBAE4E;
   }
 
-  /* ── BÚSQUEDA ── */
+  /* ── BÚSQUEDA (colapsable) ── */
+  .btn-buscar-icono {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .btn-buscar-icono:hover { background: rgba(255,255,255,0.25); }
+
   .busqueda-wrap {
     position: relative;
+    overflow: hidden;
+    max-height: 44px;
+    margin-top: 10px;
+    transition: max-height .18s ease, margin-top .18s ease;
+  }
+
+  .busqueda-wrap.oculta {
+    max-height: 0;
+    margin-top: 0;
   }
 
   .busqueda-wrap svg {
@@ -237,10 +262,38 @@
   }
 
   .tarjeta-header {
-    padding: 14px 14px 10px;
+    padding: 12px 14px 10px;
     display: flex;
     align-items: flex-start;
     gap: 10px;
+  }
+
+  .tarjeta-desc {
+    font-size: 12px;
+    color: var(--texto-suave);
+    line-height: 1.4;
+    margin-top: 3px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .tarjeta-dir {
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    font-size: 11.5px;
+    color: var(--texto-suave);
+    margin-top: 4px;
+  }
+
+  .tarjeta-dir svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--verde);
+    width: 12px;
+    height: 12px;
   }
 
   .tarjeta-avatar-col {
@@ -270,7 +323,13 @@
     max-width: 52px;
   }
 
-  .tarjeta-info { flex: 1; min-width: 0; padding-top: 2px; }
+  .tarjeta-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
 
   .tarjeta-nombre-fila {
     display: flex;
@@ -281,7 +340,7 @@
   .tarjeta-nombre {
     font-family: 'Fraunces', serif;
     font-weight: 600;
-    font-size: 15.5px;
+    font-size: 15px;
     color: var(--texto);
     white-space: nowrap;
     overflow: hidden;
@@ -295,33 +354,8 @@
     flex-shrink: 0;
   }
 
-  .tarjeta-body {
-    padding: 0 16px 16px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .tarjeta-desc {
-    font-size: 13px;
-    color: var(--texto-suave);
-    line-height: 1.5;
-    flex: 1;
-  }
-
-  .tarjeta-dir {
-    display: flex;
-    align-items: flex-start;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--texto-suave);
-  }
-
-  .tarjeta-dir svg {
-    flex-shrink: 0;
-    margin-top: 2px;
-    color: var(--verde);
+  .fila-botones-wrap {
+    padding: 6px 14px 12px;
   }
 
   .btn-wa {
@@ -455,9 +489,14 @@
         </div>
       </div>
       <a href="registro.html" class="btn-registro-header">+ Registrar</a>
+      <button type="button" id="btn-buscar-icono" class="btn-buscar-icono" aria-label="Buscar servicio" aria-expanded="false">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+      </button>
     </div>
-    <div class="busqueda-wrap">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+    <div class="busqueda-wrap oculta" id="busqueda-wrap">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
       </svg>
       <input type="text" id="buscador" placeholder="Buscar servicio o prestador...">
@@ -755,17 +794,17 @@ function crearTarjeta(s) {
             <span class="tarjeta-nombre" title="${s.nombre}">${s.nombre}</span>
             ${estrella}
           </div>
+          <p class="tarjeta-desc">${s.descripcion}</p>
+          <div class="tarjeta-dir">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+              <circle cx="12" cy="9" r="2.5"/>
+            </svg>
+            <span>${s.direccion}</span>
+          </div>
         </div>
       </div>
-      <div class="tarjeta-body">
-        <p class="tarjeta-desc">${s.descripcion}</p>
-        <div class="tarjeta-dir">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            <circle cx="12" cy="9" r="2.5"/>
-          </svg>
-          <span>${s.direccion}</span>
-        </div>
+      <div class="fila-botones-wrap">
         <div class="fila-botones">
           <a href="${urlWa}" target="_blank" rel="noopener" class="btn-wa" aria-label="Contactar a ${s.nombre} por WhatsApp">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -829,6 +868,40 @@ function renderizar() {
   }
 
 }
+
+// ── BUSCADOR COLAPSABLE ──
+// Por defecto es solo un ícono. Al tocarlo se expande para escribir,
+// y se vuelve a colapsar si queda vacío al perder el foco.
+(function initBuscadorColapsable() {
+  const btnIcono = document.getElementById('btn-buscar-icono');
+  const wrap = document.getElementById('busqueda-wrap');
+  const input = document.getElementById('buscador');
+  if (!btnIcono || !wrap || !input) return;
+
+  function abrir() {
+    wrap.classList.remove('oculta');
+    btnIcono.setAttribute('aria-expanded', 'true');
+    setTimeout(() => input.focus(), 50);
+  }
+
+  function cerrar() {
+    wrap.classList.add('oculta');
+    btnIcono.setAttribute('aria-expanded', 'false');
+  }
+
+  btnIcono.addEventListener('click', () => {
+    const estaOculto = wrap.classList.contains('oculta');
+    if (estaOculto) abrir(); else cerrar();
+  });
+
+  input.addEventListener('blur', () => {
+    if (!input.value.trim()) cerrar();
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { input.value = ''; textoBusqueda = ''; renderizar(); cerrar(); }
+  });
+})();
 
 // Filtro por categoría
 document.querySelectorAll('.cat-btn').forEach(btn => {
