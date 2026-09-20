@@ -595,11 +595,23 @@ function mezclarAleatorio(arr) {
 }
 
 function filaAServicio(cols) {
-  // cols: [Timestamp, Nombre, Categoría, Descripción, WhatsApp, Dirección, Propietario, aprobado, patrocinado]
+  // cols: [Timestamp, Nombre, Categoría, Descripción, WhatsApp, Dirección, Propietario, aprobado, patrocinado, vence]
   const catTexto = (cols[2] || '').trim().toLowerCase();
   const catCodigo = MAPA_CATEGORIAS[catTexto] || 'otros';
   let telefono = (cols[4] || '').trim().replace(/\D/g, '');
   if (telefono && !telefono.startsWith('591')) telefono = '591' + telefono;
+
+  const marcadoPatrocinado = (cols[8] || '').trim().toUpperCase() === 'TRUE';
+  const fechaVenceTexto = (cols[9] || '').trim();
+  let patrocinadoVigente = marcadoPatrocinado;
+
+  // Si hay fecha de vencimiento y ya pasó, el patrocinio se desactiva solo
+  if (marcadoPatrocinado && fechaVenceTexto) {
+    const fechaVence = new Date(fechaVenceTexto + 'T23:59:59');
+    if (!isNaN(fechaVence) && fechaVence < new Date()) {
+      patrocinadoVigente = false;
+    }
+  }
 
   return {
     nombre: (cols[1] || '').trim(),
@@ -609,8 +621,29 @@ function filaAServicio(cols) {
     direccion: (cols[5] || '').trim(),
     whatsapp: telefono,
     aprobado: (cols[7] || '').trim().toUpperCase() === 'TRUE',
-    patrocinado: (cols[8] || '').trim().toUpperCase() === 'TRUE'
+    patrocinado: patrocinadoVigente
   };
+}
+
+// Máximo de espacios patrocinados permitidos por categoría
+const MAX_PATROCINADOS_POR_CATEGORIA = 2;
+
+// Si por error hay más patrocinados activos que el límite en una misma
+// categoría, solo se respetan los primeros (según el orden de la hoja)
+// y el resto se trata como servicio normal.
+function limitarPatrocinadosPorCategoria(servicios) {
+  const contadorPorCategoria = {};
+  servicios.forEach(s => {
+    if (s.patrocinado) {
+      const usados = contadorPorCategoria[s.categoria] || 0;
+      if (usados >= MAX_PATROCINADOS_POR_CATEGORIA) {
+        s.patrocinado = false;
+      } else {
+        contadorPorCategoria[s.categoria] = usados + 1;
+      }
+    }
+  });
+  return servicios;
 }
 
 async function cargarServicios() {
@@ -625,6 +658,9 @@ async function cargarServicios() {
     SERVICIOS = filas.slice(1)
       .filter(f => f.length >= 8 && f[1] && f[1].trim())
       .map(filaAServicio);
+
+    // Máximo 1 patrocinado por categoría
+    limitarPatrocinadosPorCategoria(SERVICIOS);
 
     // Orden aleatorio en cada carga: nadie aparece siempre primero
     mezclarAleatorio(SERVICIOS);

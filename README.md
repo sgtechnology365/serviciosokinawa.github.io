@@ -11,14 +11,17 @@
 
 ## Tarjetas patrocinadas (monetización)
 
-En tu Google Sheets, agrega una columna más al final llamada **"patrocinado"** (columna I, después de "aprobado").
+En tu Google Sheets, agrega dos columnas más al final: **"patrocinado"** y **"vence"**.
 
-- Escribe `TRUE` en esa columna para el negocio que pagó por destacarse
-- Ese servicio aparecerá **primero** en su categoría, con borde dorado y la etiqueta "★ Patrocinado" (siempre visible, para mantener la confianza de los usuarios)
-- El resto de los servicios sigue en orden aleatorio como antes
+- **patrocinado**: escribe `TRUE` para el negocio que pagó por destacarse
+- **vence**: fecha en formato `AAAA-MM-DD` (ej: `2026-11-20`) hasta cuándo pagó. Al pasar esa fecha, el sistema lo baja automáticamente del lugar destacado — no tienes que acordarte de quitarlo a mano
+- **Límite: 2 patrocinados por categoría.** Si por error marcas `TRUE` a un tercer negocio de la misma categoría, el sistema solo respeta a los dos primeros de la hoja y el resto queda como servicio normal
+- Los servicios patrocinados aparecen **primero** en su categoría (su orden entre ellos también rota al azar en cada visita), con borde dorado y la etiqueta "★ Patrocinado" (siempre visible, para mantener la confianza de los usuarios)
+
+**Modelo de cobro sugerido:** suscripción mensual fija (no por clic ni por contacto — imposible de medir a esta escala, y así es predecible para ti y el negocio). Cobras por transferencia/QR y activas manualmente en Sheets, con la fecha de "vence" según lo que pagó.
 
 Orden de columnas esperado en la hoja:
-`Timestamp | Nombre | Categoría | Descripción | WhatsApp | Dirección | Propietario | aprobado | patrocinado`
+`Timestamp | Nombre | Categoría | Descripción | WhatsApp | Dirección | Propietario | aprobado | patrocinado | vence`
 
 ---
 
