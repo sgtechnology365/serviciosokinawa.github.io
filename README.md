@@ -1,4 +1,3 @@
-[README.md](https://github.com/user-attachments/files/32410518/README.md)
 # Servicios Okinawa Uno — Guía de uso
 
 ## Archivos del proyecto
@@ -7,6 +6,19 @@
 |---|---|
 | `index.html` | El catálogo público (lo que ven todos) |
 | `registro.html` | Formulario para que prestadores se registren |
+
+---
+
+## Tarjetas patrocinadas (monetización)
+
+En tu Google Sheets, agrega una columna más al final llamada **"patrocinado"** (columna I, después de "aprobado").
+
+- Escribe `TRUE` en esa columna para el negocio que pagó por destacarse
+- Ese servicio aparecerá **primero** en su categoría, con borde dorado y la etiqueta "★ Patrocinado" (siempre visible, para mantener la confianza de los usuarios)
+- El resto de los servicios sigue en orden aleatorio como antes
+
+Orden de columnas esperado en la hoja:
+`Timestamp | Nombre | Categoría | Descripción | WhatsApp | Dirección | Propietario | aprobado | patrocinado`
 
 ---
 
@@ -50,7 +62,7 @@ const numAdmin = "59177612322";
 2. Ve a **Settings → Pages**
 3. En "Source" selecciona **Deploy from a branch → main → / (root)**
 4. Guarda y espera 1-2 minutos
-5. Tu catálogo estará en: `https://sgtechnology365/serviciosokinawa.github.io/serviciosokinawa/`
+5. Tu catálogo estará en: `https://TU-USUARIO.github.io/NOMBRE-REPO/`
 
 ---
 
