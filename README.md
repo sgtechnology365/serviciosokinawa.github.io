@@ -20,8 +20,17 @@ En tu Google Sheets, agrega dos columnas más al final: **"patrocinado"** y **"v
 
 **Modelo de cobro sugerido:** suscripción mensual fija (no por clic ni por contacto — imposible de medir a esta escala, y así es predecible para ti y el negocio). Cobras por transferencia/QR y activas manualmente en Sheets, con la fecha de "vence" según lo que pagó.
 
+### Beneficios exclusivos de ser patrocinado
+
+Además del lugar destacado, los patrocinados tienen dos ventajas que los servicios normales no tienen:
+
+1. **Número de WhatsApp visible** directamente en el botón verde (ej: "Contactar por WhatsApp · 7761 2322"), no solo el botón genérico
+2. **Botón de ubicación en el mapa** — si agregas el enlace de Google Maps en la columna "ubicacion_url", aparece un botón dorado destacado junto a la dirección para que la gente llegue con un clic
+
+Para obtener el enlace de Google Maps de un negocio: buscarlo en Google Maps → botón "Compartir" → "Copiar enlace" → pegarlo en esa columna.
+
 Orden de columnas esperado en la hoja:
-`Timestamp | Nombre | Categoría | Descripción | WhatsApp | Dirección | Propietario | aprobado | patrocinado | vence`
+`Timestamp | Nombre | Categoría | Descripción | WhatsApp | Dirección | Propietario | aprobado | patrocinado | vence | ubicacion_url`
 
 ---
 
