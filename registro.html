@@ -364,6 +364,15 @@
         <input type="text" id="propietario" placeholder="Nombre de quien gestiona este servicio">
         <div class="error-msg" id="err-propietario">Ingresa tu nombre.</div>
       </div>
+
+      <div class="campo">
+        <label for="ubicacion">Enlace de ubicación (Google Maps) <span class="opcional">— opcional</span></label>
+        <input type="text" id="ubicacion" placeholder="https://maps.app.goo.gl/...">
+        <div class="ayuda">
+          Solo disponible para servicios patrocinados. Para obtenerlo: busca tu negocio en Google Maps →
+          botón "Compartir" → "Copiar enlace" → pégalo aquí.
+        </div>
+      </div>
     </div>
 
     <button class="btn-enviar" id="btn-enviar" onclick="enviarFormulario()">
@@ -400,7 +409,8 @@ const FORM_FIELDS = {
   descripcion: "entry.1998521533",
   whatsapp:    "entry.1714425222",
   direccion:   "entry.494786110",
-  propietario: "entry.1303384232"
+  propietario: "entry.1303384232",
+  ubicacion:   "entry.1637615202"
 };
 
 function validar() {
@@ -468,7 +478,8 @@ function enviarFormulario() {
     descripcion: document.getElementById('descripcion').value.trim(),
     whatsapp:    '591' + document.getElementById('whatsapp').value.trim(),
     direccion:   document.getElementById('direccion').value.trim(),
-    propietario: document.getElementById('propietario').value.trim()
+    propietario: document.getElementById('propietario').value.trim(),
+    ubicacion:   document.getElementById('ubicacion').value.trim()
   };
 
   if (GOOGLE_FORM_URL) {
@@ -494,7 +505,8 @@ function enviarFormulario() {
       `📝 *Descripción:* ${datos.descripcion}\n` +
       `📍 *Dirección:* ${datos.direccion}\n` +
       `📱 *WhatsApp:* ${datos.whatsapp}\n` +
-      `👤 *Propietario:* ${datos.propietario}`;
+      `👤 *Propietario:* ${datos.propietario}` +
+      (datos.ubicacion ? `\n🗺️ *Ubicación:* ${datos.ubicacion}` : '');
 
     const urlWa = `https://wa.me/${numAdmin}?text=${encodeURIComponent(mensaje)}`;
 
