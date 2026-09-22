@@ -462,6 +462,37 @@
   .link-registro:hover { color: var(--verde-oscuro); text-decoration: underline; }
   .link-registro svg { flex-shrink: 0; }
 
+  /* ── SUBCATEGORÍAS (dinámicas, opcionales) ── */
+  .subcats-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .subcats-bar:empty { margin-bottom: 0; }
+
+  .subcat-btn {
+    padding: 4px 12px;
+    border-radius: 16px;
+    border: 1px solid var(--borde);
+    background: white;
+    color: var(--texto-suave);
+    font-size: 11.5px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .subcat-btn:hover { border-color: var(--oro); color: #8A6412; }
+
+  .subcat-btn.activo {
+    background: var(--oro-claro);
+    border-color: var(--oro);
+    color: #8A6412;
+  }
+
   /* ── FOOTER ── */
   footer {
     text-align: center;
@@ -652,6 +683,11 @@
     ¿Ofreces un servicio? Regístrate gratis
   </a>
 
+  <!-- Se llena por JavaScript SOLO cuando la categoría elegida tiene
+       2 o más subcategorías distintas entre sus servicios. Si no,
+       queda vacío y no ocupa espacio. -->
+  <div class="subcats-bar" id="subcats-bar"></div>
+
   <div id="grid-servicios">
     <div style="grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--texto-suave);" id="cargando-msg">
       <div style="font-size:32px; margin-bottom:10px;">⏳</div>
@@ -724,7 +760,48 @@ const NOMBRES_CAT = {
 };
 
 let catActiva = "todos";
+let subcatActiva = "todas";
 let textoBusqueda = "";
+
+// Dibuja la barra de subcategorías, generada a partir de los datos
+// reales (no hay lista fija que mantener). Solo aparece si la
+// categoría activa tiene 2 o más subcategorías distintas entre
+// sus servicios aprobados.
+function renderizarSubcategorias() {
+  const barra = document.getElementById('subcats-bar');
+  if (!barra) return;
+
+  if (catActiva === 'todos') {
+    barra.innerHTML = '';
+    return;
+  }
+
+  const subcatsUnicas = [...new Set(
+    SERVICIOS
+      .filter(s => s.aprobado && s.categoria === catActiva && s.subcategoria)
+      .map(s => s.subcategoria)
+  )].sort();
+
+  if (subcatsUnicas.length < 2) {
+    barra.innerHTML = '';
+    return;
+  }
+
+  const botones = [`<button class="subcat-btn${subcatActiva === 'todas' ? ' activo' : ''}" data-subcat="todas">Todas</button>`]
+    .concat(subcatsUnicas.map(sc =>
+      `<button class="subcat-btn${subcatActiva === sc ? ' activo' : ''}" data-subcat="${sc}">${sc}</button>`
+    ));
+
+  barra.innerHTML = botones.join('');
+
+  barra.querySelectorAll('.subcat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      subcatActiva = btn.dataset.subcat;
+      renderizarSubcategorias();
+      renderizar();
+    });
+  });
+}
 
 // Parser CSV simple que respeta comillas y comas dentro de campos
 function parseCSV(texto) {
@@ -804,7 +881,11 @@ function construirMapaColumnas(encabezados) {
     aprobado:    buscarColumna(encabezados, 'aprobado'),
     patrocinado: buscarColumna(encabezados, 'patrocinado'),
     vence:       buscarColumna(encabezados, 'vence'),
-    ubicacion:   buscarColumna(encabezados, 'ubicacion')
+    ubicacion:   buscarColumna(encabezados, 'ubicacion'),
+    // Opcional: permite dividir una categoría saturada (ej. Transporte →
+    // "Mototaxi/Delivery" vs "Autos/Vagonetas" vs "Transporte pesado")
+    // sin tener que crear categorías nuevas fijas en el código.
+    subcategoria: buscarColumna(encabezados, 'subcategoria')
   };
 }
 
@@ -840,7 +921,8 @@ function filaAServicio(cols, mapa) {
     whatsapp: telefono,
     aprobado: val('aprobado').toUpperCase() === 'TRUE',
     patrocinado: patrocinadoVigente,
-    ubicacionUrl: val('ubicacion')
+    ubicacionUrl: val('ubicacion'),
+    subcategoria: val('subcategoria')
   };
 }
 
@@ -928,6 +1010,7 @@ function crearTarjeta(s, idx) {
         <div class="tarjeta-avatar-col">
           <div class="tarjeta-avatar av-${cat}">${s.emoji || EMOJIS_CAT[cat] || '⭐'}</div>
           <span class="tarjeta-cat-mini cat-${cat}" style="background:transparent; padding:0; border-radius:0;">${nombreCat}</span>
+          ${s.subcategoria ? `<span class="tarjeta-cat-mini" style="color:var(--texto-suave); font-weight:500;">${s.subcategoria}</span>` : ''}
         </div>
         <div class="tarjeta-info">
           <div class="tarjeta-nombre-fila">
@@ -1003,13 +1086,14 @@ function renderizar() {
   const filtrados = SERVICIOS.filter(s => {
     if (!s.aprobado) return false;
     const coincideCat = catActiva === "todos" || s.categoria === catActiva;
+    const coincideSubcat = catActiva === "todos" || subcatActiva === "todas" || s.subcategoria === subcatActiva;
     const texto = textoBusqueda.toLowerCase().trim();
     const coincideTexto = !texto ||
       s.nombre.toLowerCase().includes(texto) ||
       s.descripcion.toLowerCase().includes(texto) ||
       s.direccion.toLowerCase().includes(texto) ||
       (NOMBRES_CAT[s.categoria] || '').toLowerCase().includes(texto);
-    return coincideCat && coincideTexto;
+    return coincideCat && coincideSubcat && coincideTexto;
   });
 
   // Patrocinados primero (mantiene el orden aleatorio dentro de cada grupo)
@@ -1094,7 +1178,7 @@ function renderizar() {
         <div class="modal-avatar av-${cat}">${servicio.emoji || EMOJIS_CAT[cat] || '⭐'}</div>
         <div>
           <div class="modal-nombre">${servicio.nombre}${servicio.patrocinado ? ' <i class="estrella-patrocinado" style="font-size:15px">★</i>' : ''}</div>
-          <span class="tarjeta-cat-mini cat-${cat}" style="background:transparent;padding:0;">${nombreCat}</span>
+          <span class="tarjeta-cat-mini cat-${cat}" style="background:transparent;padding:0;">${nombreCat}${servicio.subcategoria ? ' · ' + servicio.subcategoria : ''}</span>
         </div>
       </div>
       <p class="modal-desc">${servicio.descripcion}</p>
@@ -1157,6 +1241,8 @@ document.querySelectorAll('.cat-btn').forEach(btn => {
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('activo'));
     btn.classList.add('activo');
     catActiva = btn.dataset.cat;
+    subcatActiva = "todas"; // al cambiar de categoría principal, se reinicia la subcategoría
+    renderizarSubcategorias();
     renderizar();
 
     // Centrar el botón elegido y pausar el carrusel un momento

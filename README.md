@@ -9,6 +9,14 @@
 
 ---
 
+## Subcategorías (opcional, para categorías saturadas)
+
+Si una categoría se llena de servicios parecidos (ej. "Transporte" con muchos mototaxis, tapando a los pocos de transporte pesado), agrega una columna **"subcategoria"** en tu hoja pública "Servicios" y escribe ahí una etiqueta corta por fila (ej: "Mototaxi/Delivery", "Autos/Vagonetas", "Transporte pesado").
+
+- El filtro de subcategoría aparece **solo** cuando esa categoría tiene 2 o más subcategorías distintas entre sus servicios — no hay que activarlo a mano
+- No hay una lista fija que mantener en el código: se genera sola a partir de lo que escribas en la hoja
+- Sirve para cualquier categoría, no solo Transporte — el día que otra se sature, se resuelve con la misma columna
+
 ## Tarjetas patrocinadas (monetización)
 
 En tu Google Sheets, agrega dos columnas más al final: **"patrocinado"** y **"vence"**.
