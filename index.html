@@ -42,39 +42,19 @@
         }
         .btn-publicar:hover { background-color: var(--primary-dark); }
         
-        /* Contenedor del Buscador */
-        .search-container {
-            max-width: 500px;
-            margin: 1.5rem auto 0 auto;
-            padding: 0 1rem;
-        }
-        .search-input {
-            width: 100%;
-            padding: 0.8rem 1.2rem;
-            font-size: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 25px;
-            box-sizing: border-box;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-        .search-input:focus {
-            border-color: var(--corporate-blue);
-        }
-
-        /* Controles de Navegación / Selector */
+        /* Controles de Navegación Tipo de Publicación */
         .navigation-tabs {
             display: flex;
             justify-content: center;
             gap: 1rem;
-            margin: 1.5rem 0;
+            margin: 1.2rem 0 0.5rem 0;
         }
         .tab-btn {
             background-color: #e0e0e0;
             color: #555;
             border: none;
-            padding: 0.8rem 2rem;
-            font-size: 1rem;
+            padding: 0.6rem 1.8rem;
+            font-size: 0.95rem;
             font-weight: bold;
             border-radius: 30px;
             cursor: pointer;
@@ -86,17 +66,66 @@
             box-shadow: 0 4px 10px rgba(30, 60, 114, 0.2);
         }
 
+        /* Buscador */
+        .search-container {
+            max-width: 500px;
+            margin: 1rem auto;
+            padding: 0 1rem;
+        }
+        .search-box {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .search-box:focus { border-color: var(--corporate-blue); }
+
+        /* Carrusel Horizontal de Categorías */
+        .categories-carousel {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.5rem 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        .categories-carousel::-webkit-scrollbar { display: none; }
+        .cat-btn {
+            flex: 0 0 auto;
+            background: white;
+            border: 1px solid #ddd;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+        .cat-btn.active {
+            background: #2a5298;
+            color: white;
+            border-color: #2a5298;
+        }
+
         .container {
             max-width: 1200px;
-            margin: 0 auto 3rem auto;
+            margin: 1rem auto 3rem auto;
             padding: 0 1rem;
         }
         
-        /* Ocultar secciones inactivas */
         .seccion-catalogo { display: none; }
         .seccion-catalogo.active { display: block; }
 
-        /* Cuadrícula Ultra Colapsada */
+        /* Cuadrícula Colapsada */
         .catalogo-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -105,7 +134,7 @@
         .card {
             background: white;
             border-radius: 8px;
-            padding: 1rem;
+            padding: 0.9rem;
             box-shadow: 0 2px 6px rgba(0,0,0,0.04);
             border-left: 4px solid #ccc;
             cursor: pointer;
@@ -131,29 +160,41 @@
             font-size: 0.8rem;
         }
         
-        /* Contenido de la Tarjeta Compacta */
         .card-nombre-comercial {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--corporate-blue);
             margin: 0 0 0.2rem 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            padding-right: 1.2rem;
         }
         .card-titulo-anuncio {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #555;
             margin: 0 0 0.5rem 0;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        .card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
         .card-precio {
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: 600;
             color: #2c3e50;
             margin: 0;
+        }
+        .card-badge-cat {
+            font-size: 0.75rem;
+            background: #eee;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            color: #555;
         }
 
         /* Ventana Emergente (Modal) */
@@ -273,31 +314,42 @@
 
     <header>
         <h1>Catálogo Comercial Okinawa</h1>
-        <p>Plataforma corporativa optimizada de productos diarios y servicios comerciales</p>
+        <p>Plataforma corporativa de productos diarios y servicios comerciales</p>
         <!-- REEMPLAZAR EL LINK DE ABAJO CON TU ENLACE PROPIO DE TALLY.SO -->
-        <a href="https://tally.so/r/TU_CODIGO_FORMULARIO" target="_blank" class="btn-publicar">➕ Publicar Anuncio</a>
+        <a href="https://tally.so/r/0QX0KZ" target="_blank" class="btn-publicar">➕ Publicar Anuncio</a>
     </header>
 
-    <!-- Barra de Búsqueda Instantánea -->
-    <div class="search-container">
-        <input type="text" id="buscador-comercial" class="search-input" placeholder="Buscar por negocio, tienda o producto..." oninput="filtrarContenido()">
+    <div class="navigation-tabs">
+        <button class="tab-btn active" onclick="cambiarSeccion('productos')">🥖 Productos del Día</button>
+        <button class="tab-btn" onclick="cambiarSeccion('servicios')">🛠️ Servicios Profesionales</button>
     </div>
 
-    <!-- Selector de secciones -->
-    <div class="navigation-tabs">
-        <button class="tab-btn active" id="btn-tab-productos" onclick="cambiarSeccion('productos')">🥖 Productos del Día</button>
-        <button class="tab-btn" id="btn-tab-servicios" onclick="cambiarSeccion('servicios')">🛠️ Servicios Profesionales</button>
+    <div class="search-container">
+        <input type="text" id="buscador" class="search-box" placeholder="Buscar por negocio o palabra clave..." oninput="filtrarCatalogo()">
+    </div>
+
+    <!-- Carrusel Deslizable de Categorías -->
+    <div class="categories-carousel" id="carrusel-categorias">
+        <button class="cat-btn active" onclick="filtrarCategoria('Todos')">🌐 Todo</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Salud y bienestar')">❤️ Salud y bienestar</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Alimentos y bebidas')">🍎 Alimentos y bebidas</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Mecánica y autos')">🚗 Mecánica y autos</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Tecnología e informática')">💻 Tecnología e informática</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Educación y capacitación')">📚 Educación y capacitación</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Belleza y cuidado personal')">✨ Belleza y cuidado</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Construcción y ferretería')">🧱 Construcción y ferretería</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Transporte y encomiendas')">📦 Transporte y envíos</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Tiendas y comercio')">🏪 Tiendas y comercio</button>
+        <button class="cat-btn" onclick="filtrarCategoria('Otros servicios')">⚙️ Otros servicios</button>
     </div>
 
     <div class="container">
-        <!-- Sección de Productos -->
         <div id="seccion-productos" class="seccion-catalogo active">
             <div id="contenedor-productos" class="catalogo-grid">
                 <p>Cargando catálogo de productos...</p>
             </div>
         </div>
 
-        <!-- Sección de Servicios -->
         <div id="seccion-servicios" class="seccion-catalogo">
             <div id="contenedor-servicios" class="catalogo-grid">
                 <p>Cargando servicios disponibles...</p>
@@ -305,7 +357,6 @@
         </div>
     </div>
 
-    <!-- Estructura Unificada de la Ventana Emergente (Modal) -->
     <div id="modal-detalle" class="modal" onclick="cerrarModalExterno(event)">
         <div class="modal-content">
             <span class="close-modal" onclick="cerrarModal()">&times;</span>
@@ -326,65 +377,54 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE CREDENCIALES DE TU BASE DE DATOS
+        // REEMPLAZAR AQUÍ CON TU TOKEN REAL DE AIRTABLE
         const AIRTABLE_TOKEN = 'patOvlESYw4gFYbK9.11a911ea7bd73cf457192d913301b9c6a57883ee026030bd5c5af356e10e2fd3'; 
         const BASE_ID = 'app471dbUsqrk2x5X';
 
-        // Estructura de memoria temporal para guardar los datos y leerlos rápido al abrir el modal
         let datosAnunciosGlobales = [];
         let codigosValidosGlobales = [];
         let seccionActiva = 'productos';
+        let categoriaActiva = 'Todos';
 
-        // Función del selector superior
+        const iconosCategorias = {
+            'Salud y bienestar': '❤️', 'Alimentos y bebidas': '🍎', 'Mecánica y autos': '🚗',
+            'Tecnología e informática': '💻', 'Educación y capacitación': '📚', 'Belleza y cuidado personal': '✨',
+            'Construcción y ferretería': '🧱', 'Transporte y encomiendas': '📦', 'Tiendas y comercio': '🏪',
+            'Otros servicios': '⚙️'
+        };
+
         function cambiarSeccion(tipo) {
             seccionActiva = tipo;
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.seccion-catalogo').forEach(sec => sec.classList.remove('active'));
 
             if(tipo === 'productos') {
-                document.getElementById('btn-tab-productos').classList.add('active');
+                if(event && event.target && event.target.classList) event.target.classList.add('active');
                 document.getElementById('seccion-productos').classList.add('active');
             } else {
-                document.getElementById('btn-tab-servicios').classList.add('active');
+                if(event && event.target && event.target.classList) event.target.classList.add('active');
                 document.getElementById('seccion-servicios').classList.add('active');
             }
-            // Volver a filtrar cada vez que se cambia de pestaña para mantener consistencia
-            filtrarContenido();
+            renderizarTarjetas();
         }
 
-        // Filtro instantáneo de texto (Nombre comercial y Título)
-        function filtrarContenido() {
-            const textoBuscado = document.getElementById('buscador-comercial').value.toLowerCase().trim();
-            const contenedorId = seccionActiva === 'productos' ? 'contenedor-productos' : 'contenedor-servicios';
-            const contenedor = document.getElementById(contenedorId);
-            const tarjetas = contenedor.getElementsByClassName('card');
+        function filtrarCategoria(cat) {
+            categoriaActiva = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+            if(event && event.target && event.target.classList) event.target.classList.add('active');
+            renderizarTarjetas();
+        }
 
-            let resultadosVisibles = 0;
+        function filtrarCatalogo() {
+            renderizarTarjetas();
+        }
 
-            for (let i = 0; i < tarjetas.length; i++) {
-                const nombreComercial = tarjetas[i].querySelector('.card-nombre-comercial').innerText.toLowerCase();
-                const tituloAnuncio = tarjetas[i].querySelector('.card-titulo-anuncio').innerText.toLowerCase();
-
-                if (nombreComercial.includes(textoBuscado) || tituloAnuncio.includes(textoBuscado)) {
-                    tarjetas[i].style.display = "flex";
-                    resultadosVisibles++;
-                } else {
-                    tarjetas[i].style.display = "none";
-                }
+        function barajar(arreglo) {
+            for (let i = arreglo.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arreglo[i], arreglo[j]] = [arreglo[j], arreglo[i]];
             }
-
-            // Manejo de mensajes de búsqueda vacía sin romper los nodos originales
-            let msgBusqueda = contenedor.querySelector('.no-results-msg');
-            if (resultadosVisibles === 0 && tarjetas.length > 0) {
-                if (!msgBusqueda) {
-                    msgBusqueda = document.createElement('p');
-                    msgBusqueda.className = 'no-results-msg';
-                    msgBusqueda.innerText = 'No se encontraron resultados para tu búsqueda.';
-                    contenedor.appendChild(msgBusqueda);
-                }
-            } else {
-                if (msgBusqueda) msgBusqueda.remove();
-            }
+            return arreglo;
         }
 
         async function cargarCatalogo() {
@@ -401,61 +441,68 @@
                 const datosAnuncios = await resAnuncios.json();
                 const datosCodigos = await resCodigos.json();
 
-                datosAnunciosGlobales = datosAnuncios.records || [];
+                datosAnunciosGlobales = barajar(datosAnuncios.records || []);
                 codigosValidosGlobales = datosCodigos.records ? datosCodigos.records.map(r => r.fields['Código']) : [];
 
-                const contenedorProductos = document.getElementById('contenedor-productos');
-                const contenedorServicios = document.getElementById('contenedor-servicios');
-                
-                contenedorProductos.innerHTML = '';
-                contenedorServicios.innerHTML = '';
-                const ahora = new Date();
-
-                if(datosAnunciosGlobales.length === 0) {
-                    contenedorProductos.innerHTML = '<p>No hay productos registrados vigentes.</p>';
-                    contenedorServicios.innerHTML = '<p>No hay servicios comerciales registrados.</p>';
-                    return;
-                }
-
-                datosAnunciosGlobales.forEach(registro => {
-                    const campos = registro.fields;
-                    const tipo = campos['Tipo de Publicación'];
-                    const codigoIngresado = campos['Código de Pago Plus'];
-                    const esPlusReal = campos['Plan / Nivel'] === 'Plus' && codigosValidosGlobales.includes(codigoIngresado);
-
-                    if (tipo === 'Producto') {
-                        const fechaCreacion = new Date(campos['Fecha de Publicación'] || registro.createdTime);
-                        const diferenciaHoras = (ahora - fechaCreacion) / (1000 * 60 * 60);
-                        if (diferenciaHoras > 24) return; 
-                    }
-
-                    // Renderizado ultra compacto (sin imagen en el grid)
-                    const tarjetaHtml = `
-                        <div class="card ${esPlusReal ? 'card-premium' : ''}" onclick="abrirModal('${registro.id}')">
-                            <div>
-                                <h3 class="card-nombre-comercial">${campos['Nombre Comercial'] || 'Negocio sin nombre'}</h3>
-                                <p class="card-titulo-anuncio">${campos['Título del Anuncio'] || 'Anuncio sin título'}</p>
-                            </div>
-                            <p class="card-precio">${campos['Precio / Tarifa'] || 'A consultar'}</p>
-                        </div>
-                    `;
-
-                    if (tipo === 'Producto') {
-                        contenedorProductos.innerHTML += tarjetaHtml;
-                    } else if (tipo === 'Servicio') {
-                        contenedorServicios.innerHTML += tarjetaHtml;
-                    }
-                });
-
-                if(contenedorProductos.innerHTML === '') contenedorProductos.innerHTML = '<p>No hay ofertas de productos el día de hoy.</p>';
-                if(contenedorServicios.innerHTML === '') contenedorServicios.innerHTML = '<p>No hay servicios comerciales registrados.</p>';
-
+                renderizarTarjetas();
             } catch (error) {
                 console.error("Error al procesar la carga del catálogo:", error);
             }
         }
 
-        // Lógica de apertura y mapeo de datos al Modal Emergente
+        function renderizarTarjetas() {
+            const contenedorProductos = document.getElementById('contenedor-productos');
+            const contenedorServicios = document.getElementById('contenedor-servicios');
+            const busqueda = document.getElementById('buscador').value.toLowerCase();
+            
+            contenedorProductos.innerHTML = '';
+            contenedorServicios.innerHTML = '';
+            const ahora = new Date();
+
+            datosAnunciosGlobales.forEach(registro => {
+                const campos = registro.fields;
+                const tipo = campos['Tipo de Publicación'];
+                const categoria = campos['Categoría'] || 'Otros servicios';
+                const codigoIngresado = campos['Código de Pago Plus'];
+                const esPlusReal = campos['Plan / Nivel'] === 'Plus' && codigosValidosGlobales.includes(codigoIngresado);
+
+                if ((seccionActiva === 'productos' && tipo !== 'Producto') || (seccionActiva === 'servicios' && tipo !== 'Servicio')) return;
+
+                if (tipo === 'Producto') {
+                    const fechaCreacion = new Date(campos['Fecha de Publicación'] || registro.createdTime);
+                    const diferenciaHoras = (ahora - fechaCreacion) / (1000 * 60 * 60);
+                    if (diferenciaHoras > 24) return; 
+                }
+
+                if (categoriaActiva !== 'Todos' && categoria !== categoriaActiva) return;
+
+                const nombreComercial = (campos['Nombre Comercial'] || '').toLowerCase();
+                const tituloAnuncio = (campos['Título del Anuncio'] || '').toLowerCase();
+                if (busqueda && !nombreComercial.includes(busqueda) && !tituloAnuncio.includes(busqueda)) return;
+
+                const icono = iconosCategorias[categoria] || '⚙️';
+
+                const tarjetaHtml = `
+                    <div class="card ${esPlusReal ? 'card-premium' : ''}" onclick="abrirModal('${registro.id}')">
+                        <div>
+                            <h3 class="card-nombre-comercial">${campos['Nombre Comercial'] || 'Negocio sin nombre'}</h3>
+                            <p class="card-titulo-anuncio">${campos['Título del Anuncio'] || 'Anuncio sin título'}</p>
+                        </div>
+                        <div class="card-meta">
+                            <p class="card-precio">${campos['Precio / Tarifa'] || 'A consultar'}</p>
+                            <span class="card-badge-cat" title="${categoria}">${icono}</span>
+                        </div>
+                    </div>
+                `;
+
+                if (tipo === 'Producto') contenedorProductos.innerHTML += tarjetaHtml;
+                if (tipo === 'Servicio') contenedorServicios.innerHTML += tarjetaHtml;
+            });
+
+            if(seccionActiva === 'productos' && contenedorProductos.innerHTML === '') contenedorProductos.innerHTML = '<p>No se encontraron productos coincidentes hoy.</p>';
+            if(seccionActiva === 'servicios' && contenedorServicios.innerHTML === '') contenedorServicios.innerHTML = '<p>No se encontraron servicios registrados coincidentes.</p>';
+        }
+
         function abrirModal(idRegistro) {
             const registro = datosAnunciosGlobales.find(r => r.id === idRegistro);
             if(!registro) return;
@@ -464,39 +511,32 @@
             const codigoIngresado = campos['Código de Pago Plus'];
             const esPlusReal = campos['Plan / Nivel'] === 'Plus' && codigosValidosGlobales.includes(codigoIngresado);
 
-            // Cargar imagen de fondo retrasada (lazy loading manual en el modal)
             const imgContenedor = document.getElementById('modal-imagen-contenedor');
             if (campos.Fotos && campos.Fotos.length > 0) {
-                // Al ser arreglo de adjuntos de Airtable, extrae la propiedad de URL del primer elemento
-                const urlImagen = campos.Fotos[0].url || campos.Fotos.url;
-                imgContenedor.innerHTML = `<img src="${urlImagen}" alt="Imagen del anuncio">`;
+                imgContenedor.innerHTML = `<img src="${campos.Fotos.url}" alt="Imagen comercial">`;
                 imgContenedor.style.display = "block";
             } else {
                 imgContenedor.innerHTML = `<img src="https://via.placeholder.com/500x250?text=Sin+Imagen+Comercial" alt="Sin imagen">`;
             }
 
-            // Inyectar textos básicos
             document.getElementById('modal-badge-contenedor').innerHTML = esPlusReal ? '<span class="modal-badge">Anuncio Destacado ✨</span>' : '';
-            document.getElementById('modal-nombre-comercial').innerText = campos['Nombre Comercial'] || 'Establecimiento Comercial';
+            document.getElementById('modal-nombre-comercial').innerText = campos['Nombre Comercial'] || 'Establecimiento';
             document.getElementById('modal-titulo-anuncio').innerText = campos['Título del Anuncio'] || 'Sin título';
-            document.getElementById('modal-descripcion').innerText = campos['Descripción o Actividad'] || 'Sin descripción detallada disponible.';
-            document.getElementById('modal-precio').innerHTML = `<strong>Precio / Tarifa:</strong> ${campos['Precio / Tarifa'] || 'A consultar'}`;
+            document.getElementById('modal-descripcion').innerText = campos['Descripción o Actividad'] || 'Sin descripción disponible.';
+            document.getElementById('modal-precio').innerHTML = `<strong>Precio:</strong> ${campos['Precio / Tarifa'] || 'A consultar'}`;
 
-            // Control de visibilidad de número exclusivo Plus
             const contactoContenedor = document.getElementById('modal-contacto-visible');
             if(esPlusReal && campos['Teléfono de WhatsApp']) {
-                contactoContenedor.innerHTML = `<div class="modal-info-contacto">📱 Número Directo: ${campos['Teléfono de WhatsApp']}</div>`;
+                contactoContenedor.innerHTML = `<div class="modal-info-contacto">📱 Teléfono Directo: ${campos['Teléfono de WhatsApp']}</div>`;
                 contactoContenedor.style.display = "block";
             } else {
                 contactoContenedor.style.display = "none";
             }
 
-            // Configurar botón dinámico de redirección a WhatsApp
             const numeroWhatsApp = campos['Teléfono de WhatsApp'] || '';
-            const textoMensaje = encodeURIComponent(`Hola, solicito información sobre tu anuncio "${campos['Título del Anuncio']}" que vi en el Catálogo de Okinawa.`);
+            const textoMensaje = encodeURIComponent(`Hola, solicito información sobre tu anuncio "${campos['Título del Anuncio']}" que vi en el Catálogo.`);
             document.getElementById('modal-btn-whatsapp').href = `https://wa.me/${numeroWhatsApp}?text=${textoMensaje}`;
 
-            // Control y mapeo del botón de Google Maps exclusivo para Plus
             const btnMapa = document.getElementById('modal-btn-mapa');
             if(esPlusReal && campos['Enlace de Google Maps']) {
                 btnMapa.href = campos['Enlace de Google Maps'];
@@ -505,17 +545,11 @@
                 btnMapa.style.display = "none";
             }
 
-            // Desplegar modal
             document.getElementById('modal-detalle').style.display = "flex";
         }
 
-        function cerrarModal() {
-            document.getElementById('modal-detalle').style.display = "none";
-        }
-
-        function cerrarModalExterno(e) {
-            if(e.target.id === 'modal-detalle') cerrarModal();
-        }
+        function cerrarModal() { document.getElementById('modal-detalle').style.display = "none"; }
+        function cerrarModalExterno(e) { if(e.target.id === 'modal-detalle') cerrarModal(); }
 
         document.addEventListener('DOMContentLoaded', cargarCatalogo);
     </script>
