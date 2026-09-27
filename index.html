@@ -1,1310 +1,268 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Servicios Okinawa Uno</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --verde-oscuro: #143D2C;
-    --verde: #2C7A54;
-    --verde-claro: #E7F3EB;
-    --oro: #C89B3C;
-    --oro-claro: #FAF1DE;
-    --wa: #25D366;
-    --wa-hover: #1DA851;
-    --texto: #191E1B;
-    --texto-suave: #5B6460;
-    --borde: #E3E7E3;
-    --fondo: #F7F8F5;
-    --blanco: #FFFFFF;
-    --radio: 14px;
-    --sombra: 0 1px 2px rgba(20,40,30,0.06), 0 4px 14px rgba(20,40,30,0.05);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--fondo);
-    color: var(--texto);
-    font-size: 15px;
-    line-height: 1.6;
-  }
-
-  /* ── HEADER ── */
-  header {
-    background:
-      linear-gradient(175deg, rgba(20,61,44,0.55) 0%, rgba(15,45,32,0.88) 75%),
-      url('assets/okinawa-uno-banner.jpg');
-    background-size: cover;
-    background-position: center 60%;
-    color: white;
-    padding: 0;
-  }
-
-  .header-inner {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 18px 16px 16px;
-  }
-
-  .header-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: nowrap;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo-icono {
-    width: 32px;
-    height: 32px;
-    background: rgba(200,155,60,0.22);
-    border: 1px solid rgba(200,155,60,0.4);
-    border-radius: 9px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    flex-shrink: 0;
-  }
-
-  .logo-texto h1 {
-    font-family: 'Fraunces', serif;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.2;
-    letter-spacing: -0.01em;
-    white-space: nowrap;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.35);
-  }
-
-  .logo-texto span {
-    font-size: 11px;
-    opacity: 0.85;
-    font-weight: 400;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.35);
-  }
-
-  .btn-registro-header {
-    background: var(--oro);
-    color: var(--verde-oscuro);
-    border: none;
-    padding: 7px 12px;
-    border-radius: 7px;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .btn-registro-header:hover {
-    background: #DBAE4E;
-  }
-
-  /* ── BÚSQUEDA (colapsable) ── */
-  .btn-buscar-icono {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: none;
-    background: rgba(255,255,255,0.15);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-  }
-
-  .btn-buscar-icono:hover { background: rgba(255,255,255,0.25); }
-
-  .busqueda-wrap {
-    position: relative;
-    overflow: hidden;
-    max-height: 44px;
-    margin-top: 10px;
-    transition: max-height .18s ease, margin-top .18s ease;
-  }
-
-  .busqueda-wrap.oculta {
-    max-height: 0;
-    margin-top: 0;
-  }
-
-  .busqueda-wrap svg {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: rgba(255,255,255,0.6);
-    pointer-events: none;
-  }
-
-  #buscador {
-    width: 100%;
-    padding: 9px 16px 9px 42px;
-    border-radius: 10px;
-    border: none;
-    background: rgba(255,255,255,0.15);
-    color: white;
-    font-size: 14px;
-    font-family: 'Inter', sans-serif;
-    outline: none;
-  }
-
-  #buscador::placeholder { color: rgba(255,255,255,0.6); }
-  #buscador:focus { background: rgba(255,255,255,0.22); }
-
-  /* ── CATEGORÍAS ── */
-  .cats-bar {
-    background: white;
-    border-bottom: 1px solid var(--borde);
-    position: relative;
-    padding: 0 20px;
-  }
-
-  .cats-scroll {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    max-width: 960px;
-    margin: 0 auto;
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
-    mask-image: linear-gradient(to right, transparent 0, #000 18px, #000 calc(100% - 18px), transparent 100%);
-  }
-  .cats-scroll::-webkit-scrollbar { display: none; }
-
-  .cats-inner {
-    display: flex;
-    gap: 7px;
-    padding: 9px 4px;
-    min-width: max-content;
-  }
-
-  .cat-btn {
-    padding: 6px 16px;
-    border-radius: 20px;
-    border: 1.5px solid var(--borde);
-    background: white;
-    color: var(--texto-suave);
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all .15s;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .cat-btn:hover { border-color: var(--verde); color: var(--verde); }
-
-  .cat-btn.activo {
-    background: var(--verde-oscuro);
-    border-color: var(--verde-oscuro);
-    color: white;
-  }
-
-  /* ── CONTENIDO PRINCIPAL ── */
-  main {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 24px 20px 60px;
-  }
-
-  /* ── GRID DE TARJETAS ── */
-  #grid-servicios {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 16px;
-  }
-
-  .tarjeta {
-    background: white;
-    border: 1px solid var(--borde);
-    border-radius: var(--radio);
-    overflow: hidden;
-    box-shadow: var(--sombra);
-    transition: transform .15s, box-shadow .15s;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .tarjeta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  }
-
-  .tarjeta.patrocinada {
-    border: 1.5px solid var(--oro);
-    background: linear-gradient(180deg, var(--oro-claro) 0%, white 70px);
-  }
-
-  .etiqueta-patrocinado {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    font-weight: 600;
-    color: #8A6412;
-    background: var(--oro-claro);
-    border: 1px solid #E4C878;
-    padding: 2px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.02em;
-    margin-bottom: 6px;
-    width: fit-content;
-  }
-
-  .tarjeta-header {
-    padding: 12px 14px 10px;
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .tarjeta-desc {
-    font-size: 12px;
-    color: var(--texto-suave);
-    line-height: 1.4;
-    margin-top: 3px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .tarjeta-dir {
-    display: flex;
-    align-items: flex-start;
-    gap: 5px;
-    font-size: 11.5px;
-    color: var(--texto-suave);
-    margin-top: 4px;
-  }
-
-  .tarjeta-dir svg {
-    flex-shrink: 0;
-    margin-top: 1px;
-    color: var(--verde);
-    width: 12px;
-    height: 12px;
-  }
-
-  .tarjeta-avatar-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    flex-shrink: 0;
-  }
-
-  .tarjeta-avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-  }
-
-  .tarjeta-cat-mini {
-    font-size: 9.5px;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    text-align: center;
-    line-height: 1.2;
-    max-width: 52px;
-  }
-
-  .tarjeta-info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .tarjeta-nombre-fila {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-  }
-
-  .tarjeta-nombre-mask {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    position: relative;
-    cursor: pointer;
-  }
-
-  .tarjeta-nombre {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--texto);
-    white-space: nowrap;
-    display: inline-block;
-  }
-
-  .tarjeta-nombre-mask:hover .tarjeta-nombre,
-  .tarjeta-nombre-mask:focus-visible .tarjeta-nombre { color: var(--verde-oscuro); }
-
-  .tarjeta-nombre.marquee {
-    animation: marqueeNombre linear infinite;
-  }
-
-  @keyframes marqueeNombre {
-    0%, 12% { transform: translateX(0); }
-    45%, 55% { transform: translateX(var(--desplazamiento, 0)); }
-    88%, 100% { transform: translateX(0); }
-  }
-
-  .estrella-patrocinado {
-    color: var(--oro);
-    font-size: 13px;
-    font-style: normal;
-    flex-shrink: 0;
-  }
-
-  .fila-botones-wrap {
-    padding: 6px 14px 12px;
-  }
-
-  .btn-wa {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: var(--wa);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background .15s;
-    font-family: 'Inter', sans-serif;
-    width: 100%;
-  }
-
-  .btn-wa:hover { background: var(--wa-hover); }
-
-  .wa-numero {
-    font-weight: 700;
-    opacity: 0.95;
-  }
-
-  .fila-botones {
-    display: flex;
-    gap: 6px;
-  }
-
-  .fila-botones .btn-wa { flex: 1; }
-
-  .btn-ubicacion {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--oro-claro);
-    color: #8A6412;
-    border: 1.5px solid var(--oro);
-    border-radius: 8px;
-    width: 42px;
-    flex-shrink: 0;
-    cursor: pointer;
-    text-decoration: none;
-    transition: background .15s;
-  }
-
-  .btn-ubicacion:hover { background: #F3E2B8; }
-
-  /* ── VACÍO ── */
-  #sin-resultados {
-    display: none;
-    grid-column: 1/-1;
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--texto-suave);
-  }
-
-  #sin-resultados .icono { font-size: 40px; margin-bottom: 12px; }
-  #sin-resultados p { font-size: 14px; }
-
-  /* ── BANNER REGISTRO ── */
-  .link-registro {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 12.5px;
-    color: var(--verde);
-    font-weight: 500;
-    text-decoration: none;
-    margin-bottom: 10px;
-    width: fit-content;
-  }
-
-  .link-registro:hover { color: var(--verde-oscuro); text-decoration: underline; }
-  .link-registro svg { flex-shrink: 0; }
-
-  /* ── SUBCATEGORÍAS (dinámicas, opcionales) ── */
-  .subcats-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-
-  .subcats-bar:empty { margin-bottom: 0; }
-
-  .subcat-btn {
-    padding: 4px 12px;
-    border-radius: 16px;
-    border: 1px solid var(--borde);
-    background: white;
-    color: var(--texto-suave);
-    font-size: 11.5px;
-    font-weight: 500;
-    cursor: pointer;
-    white-space: nowrap;
-    font-family: 'Inter', sans-serif;
-  }
-
-  .subcat-btn:hover { border-color: var(--oro); color: #8A6412; }
-
-  .subcat-btn.activo {
-    background: var(--oro-claro);
-    border-color: var(--oro);
-    color: #8A6412;
-  }
-
-  /* ── FOOTER ── */
-  footer {
-    text-align: center;
-    padding: 24px 20px;
-    border-top: 1px solid var(--borde);
-    font-size: 12px;
-    color: var(--texto-suave);
-    background: white;
-  }
-
-  /* ── COLORES POR CATEGORÍA ── */
-  .cat-salud       { background: #FEF0F0; color: #C0392B; }
-  .cat-alimentos   { background: #FFF5E6; color: #E67E22; }
-  .cat-mecanica    { background: #EEF2FF; color: #3B5BDB; }
-  .cat-tecnologia  { background: #F0F0FF; color: #6741D9; }
-  .cat-educacion   { background: #E8F8F0; color: #0F6E56; }
-  .cat-belleza     { background: #FFF0F5; color: #C0397A; }
-  .cat-construccion{ background: #FDF5E6; color: #8B6914; }
-  .cat-transporte  { background: #EAF4FB; color: #1A6FA3; }
-  .cat-comercio    { background: #F0FFF0; color: #2E7D32; }
-  .cat-otros       { background: #F4F4F4; color: #5A5A72; }
-
-  .av-salud       { background: #FEF0F0; }
-  .av-alimentos   { background: #FFF5E6; }
-  .av-mecanica    { background: #EEF2FF; }
-  .av-tecnologia  { background: #F0F0FF; }
-  .av-educacion   { background: #E8F8F0; }
-  .av-belleza     { background: #FFF0F5; }
-  .av-construccion{ background: #FDF5E6; }
-  .av-transporte  { background: #EAF4FB; }
-  .av-comercio    { background: #F0FFF0; }
-  .av-otros       { background: #F4F4F4; }
-
-  /* ── MODAL DE DETALLE ── */
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15,30,22,0.55);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 100;
-    opacity: 1;
-    transition: opacity .18s ease;
-  }
-
-  .modal-overlay.oculto { display: none; }
-
-  .modal-caja {
-    background: white;
-    border-radius: 18px 18px 0 0;
-    width: 100%;
-    max-width: 480px;
-    max-height: 85vh;
-    overflow-y: auto;
-    padding: 20px 20px 26px;
-    animation: modalSubir .22s ease;
-  }
-
-  @media (min-width: 640px) {
-    .modal-overlay { align-items: center; }
-    .modal-caja { border-radius: 18px; margin: 20px; }
-  }
-
-  @keyframes modalSubir {
-    from { transform: translateY(24px); opacity: 0; }
-    to { transform: translateY(0); opacity: 1; }
-  }
-
-  .modal-cerrar {
-    float: right;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    border: none;
-    background: var(--fondo);
-    color: var(--texto-suave);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
-
-  .modal-cerrar:hover { background: var(--borde); }
-
-  .modal-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-
-  .modal-avatar {
-    width: 54px;
-    height: 54px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    flex-shrink: 0;
-  }
-
-  .modal-nombre {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 19px;
-    line-height: 1.25;
-    margin-bottom: 4px;
-  }
-
-  .modal-desc {
-    font-size: 13.5px;
-    color: var(--texto-suave);
-    line-height: 1.6;
-    margin-bottom: 16px;
-  }
-
-  .modal-dir {
-    display: flex;
-    align-items: flex-start;
-    gap: 7px;
-    font-size: 13px;
-    color: var(--texto-suave);
-    margin-bottom: 18px;
-  }
-
-  .modal-dir svg { flex-shrink: 0; margin-top: 2px; color: var(--verde); }
-
-  @media (max-width: 480px) {
-    .header-inner { padding: 20px 16px 18px; }
-    main { padding: 16px 16px 50px; }
-    #grid-servicios { grid-template-columns: 1fr; }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo Comercial Okinawa</title>
+    <style>
+        :root {
+            --primary: #25D366;
+            --primary-dark: #128C7E;
+            --premium: #FFD700;
+            --dark: #333;
+            --light: #f9f9f9;
+            --gray: #666;
+            --corporate-blue: #1e3c72;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+            color: var(--dark);
+        }
+        header {
+            background: linear-gradient(135deg, var(--corporate-blue), #2a5298);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .btn-publicar {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.8rem;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: background 0.3s;
+        }
+        .btn-publicar:hover { background-color: var(--primary-dark); }
+        h2 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 0.5rem;
+            margin-top: 3rem;
+            color: var(--corporate-blue);
+        }
+        .catalogo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .card-premium {
+            border: 2px solid var(--premium);
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15);
+            background: linear-gradient(to bottom, #fff, #fffdf0);
+        }
+        .galeria-fotos {
+            position: relative;
+            background: #eee;
+            height: 220px;
+            display: flex;
+        }
+        .galeria-fotos img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-cuerpo {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .badge-plus {
+            background-color: var(--premium);
+            color: #000;
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            align-self: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .precio {
+            font-size: 1.2rem;
+            color: #2a5298;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .contacto-plus {
+            background: #eef5ff;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin: 0.5rem 0;
+        }
+        .botones-accion {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .btn-whatsapp {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 0.7rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-mapa {
+            background-color: #4285F4;
+            color: white;
+            text-align: center;
+            padding: 0.7rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
-    <div class="header-top">
-      <div class="logo">
-        <div class="logo-icono">🏘️</div>
-        <div class="logo-texto">
-          <h1>Servicios Okinawa Uno</h1>
-          <span>Directorio comunitario · Santa Cruz, Bolivia</span>
+    <header>
+        <h1>Catálogo Comercial Okinawa</h1>
+        <p>Plataforma corporativa de productos diarios y servicios empresariales disponibles</p>
+        <!-- REEMPLAZAR EL LINK DE ABAJO CON TU ENLACE PROPIO DE TALLY.SO -->
+        <a href="https://tally.so/r/0QX0KZ" target="_blank" class="btn-publicar">➕ Publicar Anuncio</a>
+    </header>
+
+    <div class="container">
+        <!-- Sección de Productos -->
+        <h2>🥖 Ofertas de Productos (Vigencia 24h)</h2>
+        <div id="contenedor-productos" class="catalogo-grid">
+            <p>Cargando catálogo de productos...</p>
         </div>
-      </div>
-      <a href="registro.html" class="btn-registro-header">+ Registrar</a>
-      <button type="button" id="btn-buscar-icono" class="btn-buscar-icono" aria-label="Buscar servicio" aria-expanded="false">
-        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-      </button>
+
+        <!-- Sección de Servicios -->
+        <h2>🛠️ Servicios Comerciales y Profesionales</h2>
+        <div id="contenedor-servicios" class="catalogo-grid">
+            <p>Cargando servicios disponibles...</p>
+        </div>
     </div>
-    <div class="busqueda-wrap oculta" id="busqueda-wrap">
-      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-      </svg>
-      <input type="text" id="buscador" placeholder="Buscar servicio o prestador...">
-    </div>
-  </div>
-</header>
 
-<nav class="cats-bar" role="navigation" aria-label="Categorías">
-  <div class="cats-scroll" id="cats-scroll">
-    <div class="cats-inner">
-      <button class="cat-btn activo" data-cat="todos">Todos</button>
-      <button class="cat-btn" data-cat="salud">Salud</button>
-      <button class="cat-btn" data-cat="alimentos">Alimentos</button>
-      <button class="cat-btn" data-cat="mecanica">Mecánica</button>
-      <button class="cat-btn" data-cat="tecnologia">Tecnología</button>
-      <button class="cat-btn" data-cat="educacion">Educación</button>
-      <button class="cat-btn" data-cat="belleza">Belleza</button>
-      <button class="cat-btn" data-cat="construccion">Construcción</button>
-      <button class="cat-btn" data-cat="transporte">Transporte</button>
-      <button class="cat-btn" data-cat="comercio">Comercio</button>
-      <button class="cat-btn" data-cat="otros">Otros</button>
-    </div>
-  </div>
-</nav>
+    <script>
+        const AIRTABLE_TOKEN = 'patOvlESYw4gFYbK9'; 
+        const BASE_ID = 'app471dbUsqrk2x5X';
 
-<main>
-  <a href="registro.html" class="link-registro">
-    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
-    </svg>
-    ¿Ofreces un servicio? Regístrate gratis
-  </a>
+        async function cargarCatalogo() {
+            try {
+                const [resAnuncios, resCodigos] = await Promise.all([
+                    fetch(`https://api.airtable.com/v0/${BASE_ID}/CatalogoComercial?filterByFormula=%7BAprobado%7D%3D1`, {
+                        headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` }
+                    }),
+                    fetch(`https://api.airtable.com/v0/${BASE_ID}/CodigosPrepagados`, {
+                        headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` }
+                    })
+                ]);
 
-  <!-- Se llena por JavaScript SOLO cuando la categoría elegida tiene
-       2 o más subcategorías distintas entre sus servicios. Si no,
-       queda vacío y no ocupa espacio. -->
-  <div class="subcats-bar" id="subcats-bar"></div>
+                const datosAnuncios = await resAnuncios.json();
+                const datosCodigos = await resCodigos.json();
 
-  <div id="grid-servicios">
-    <div style="grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--texto-suave);" id="cargando-msg">
-      <div style="font-size:32px; margin-bottom:10px;">⏳</div>
-      <p>Cargando servicios...</p>
-    </div>
-    <div id="sin-resultados">
-      <div class="icono">🔍</div>
-      <p>No se encontraron servicios con ese criterio.</p>
-    </div>
-  </div>
-</main>
+                const codigosValidos = datosCodigos.records ? datosCodigos.records.map(r => r.fields['Código']) : [];
 
-<div class="modal-overlay oculto" id="modal-overlay">
-  <div class="modal-caja" id="modal-caja" role="dialog" aria-modal="true">
-    <button type="button" class="modal-cerrar" id="modal-cerrar" aria-label="Cerrar">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>
-    </button>
-    <div id="modal-contenido"></div>
-  </div>
-</div>
+                const contenedorProductos = document.getElementById('contenedor-productos');
+                const contenedorServicios = document.getElementById('contenedor-servicios');
+                
+                contenedorProductos.innerHTML = '';
+                contenedorServicios.innerHTML = '';
+                const ahora = new Date();
 
-<footer>
-  Directorio comunitario de Okinawa Uno · Santa Cruz, Bolivia<br>
-  <span style="margin-top:4px; display:block;">
-    ¿Quieres aparecer aquí? <a href="registro.html" style="color:var(--verde); font-weight:500;">Registra tu servicio</a>
-    ·
-    <a href="patrocinar.html" style="color:var(--oro-oscuro, #8A6412); font-weight:500;">Destaca tu negocio</a>
-  </span>
-</footer>
+                if(!datosAnuncios.records || datosAnuncios.records.length === 0) {
+                    contenedorProductos.innerHTML = '<p>No hay ofertas de productos registradas en este momento.</p>';
+                    contenedorServicios.innerHTML = '<p>No hay servicios activos registrados actualmente.</p>';
+                    return;
+                }
 
-<script>
-// ── CONEXIÓN A GOOGLE SHEETS ──
-// Apunta a la hoja PÚBLICA (pestaña "Servicios"), no a la privada de respuestas.
-const SHEET_ID = "1SonJPnEY--sY3v9pPjkKEDyNXid8CXILhztTf3cAOKQ";
-const SERVICIOS_GID = "0";
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SERVICIOS_GID}`;
+                datosAnuncios.records.forEach(registro => {
+                    const campos = registro.fields;
+                    const tipo = campos['Tipo de Publicación'];
+                    const codigoIngresado = campos['Código de Pago Plus'];
 
-// Orden de columnas en la hoja: Timestamp, Nombre, Categoría, Descripción, WhatsApp, Dirección, Propietario, aprobado
-// Mapea el texto de categoría (como llega del formulario) al código interno usado para colores/filtros
-const MAPA_CATEGORIAS = {
-  "salud y bienestar": "salud",
-  "alimentos y bebidas": "alimentos",
-  "mecánica y autos": "mecanica",
-  "mecanica y autos": "mecanica",
-  "tecnología e informática": "tecnologia",
-  "tecnologia e informatica": "tecnologia",
-  "educación y capacitación": "educacion",
-  "educacion y capacitacion": "educacion",
-  "belleza y cuidado personal": "belleza",
-  "construcción y ferretería": "construccion",
-  "construccion y ferreteria": "construccion",
-  "transporte y encomiendas": "transporte",
-  "tiendas y comercio": "comercio",
-  "otros servicios": "otros"
-};
+                    const esPlusReal = campos['Plan / Nivel'] === 'Plus' && codigosValidos.includes(codigoIngresado);
 
-let SERVICIOS = [];
+                    if (tipo === 'Producto') {
+                        const fechaCreacion = new Date(campos['Fecha de Publicación'] || registro.createdTime);
+                        const diferenciaHoras = (ahora - fechaCreacion) / (1000 * 60 * 60);
+                        if (diferenciaHoras > 24) return; 
+                    }
 
-const EMOJIS_CAT = {
-  salud: "🩺", alimentos: "🍽️", mecanica: "🔧", tecnologia: "💻",
-  educacion: "📚", belleza: "💅", construccion: "🏗️", transporte: "🚗",
-  comercio: "🛒", otros: "⭐"
-};
+                    let imagenesHtml = '';
+                    if (campos.Fotos && campos.Fotos.length > 0) {
+                        imagenesHtml += `<img src="${campos.Fotos.url}" class="card-img-principal">`;
+                    } else {
+                        imagenesHtml = `<img src="https://via.placeholder.com/300x220?text=Sin+Imagen" class="card-img-principal">`;
+                    }
 
-const NOMBRES_CAT = {
-  salud: "Salud", alimentos: "Alimentos", mecanica: "Mecánica",
-  tecnologia: "Tecnología", educacion: "Educación", belleza: "Belleza",
-  construccion: "Construcción", transporte: "Transporte",
-  comercio: "Comercio", otros: "Otros"
-};
+                    const numeroWhatsApp = campos['Teléfono de WhatsApp'] || '';
+                    const textoMensaje = encodeURIComponent(`Hola, solicito información sobre el anuncio de "${campos['Título del Anuncio']}" visto en el Catálogo de Okinawa.`);
+                    
+                    const infoContactoHtml = esPlusReal 
+                        ? `<p class="contacto-plus">📱 Contacto: ${numeroWhatsApp}</p>` 
+                        : '';
 
-let catActiva = "todos";
-let subcatActiva = "todas";
-let textoBusqueda = "";
+                    const botonMapasHtml = (esPlusReal && campos['Enlace de Google Maps'])
+                        ? `<a href="${campos['Enlace de Google Maps']}" target="_blank" class="btn-mapa">📍 Ver Ubicación</a>`
+                        : '';
 
-// Dibuja la barra de subcategorías, generada a partir de los datos
-// reales (no hay lista fija que mantener). Solo aparece si la
-// categoría activa tiene 2 o más subcategorías distintas entre
-// sus servicios aprobados.
-function renderizarSubcategorias() {
-  const barra = document.getElementById('subcats-bar');
-  if (!barra) return;
+                    const tarjetaHtml = `
+                        <div class="card ${esPlusReal ? 'card-premium' : 'card-estandar'}">
+                            <div class="galeria-fotos">
+                                ${imagenesHtml}
+                            </div>
+                            <div class="card-cuerpo">
+                                ${esPlusReal ? '<span class="badge-plus">Destacado ✨</span>' : ''}
+                                <h3>${campos['Título del Anuncio'] || 'Anuncio sin título'}</h3>
+                                <p class="descripcion">${campos['Descripción o Actividad'] || ''}</p>
+                                <p class="precio">Precio: ${campos['Precio / Tarifa'] || 'A consultar'}</p>
+                                ${infoContactoHtml}
+                                <div class="botones-accion">
+                                    <a href="https://wa.me/${numeroWhatsApp}?text=${textoMensaje}" target="_blank" class="btn-whatsapp">Contactar por WhatsApp</a>
+                                    ${botonMapasHtml}
+                                </div>
+                            </div>
+                        </div>
+                    `;
 
-  if (catActiva === 'todos') {
-    barra.innerHTML = '';
-    return;
-  }
+                    if (tipo === 'Producto') {
+                        contenedorProductos.innerHTML += tarjetaHtml;
+                    } else if (tipo === 'Servicio') {
+                        contenedorServicios.innerHTML += tarjetaHtml;
+                    }
+                });
 
-  const subcatsUnicas = [...new Set(
-    SERVICIOS
-      .filter(s => s.aprobado && s.categoria === catActiva && s.subcategoria)
-      .map(s => s.subcategoria)
-  )].sort();
+                if(contenedorProductos.innerHTML === '') contenedorProductos.innerHTML = '<p>No hay ofertas de productos vigentes.</p>';
+                if(contenedorServicios.innerHTML === '') contenedorServicios.innerHTML = '<p>No hay servicios activos registrados.</p>';
 
-  if (subcatsUnicas.length < 2) {
-    barra.innerHTML = '';
-    return;
-  }
-
-  const botones = [`<button class="subcat-btn${subcatActiva === 'todas' ? ' activo' : ''}" data-subcat="todas">Todas</button>`]
-    .concat(subcatsUnicas.map(sc =>
-      `<button class="subcat-btn${subcatActiva === sc ? ' activo' : ''}" data-subcat="${sc}">${sc}</button>`
-    ));
-
-  barra.innerHTML = botones.join('');
-
-  barra.querySelectorAll('.subcat-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      subcatActiva = btn.dataset.subcat;
-      renderizarSubcategorias();
-      renderizar();
-    });
-  });
-}
-
-// Parser CSV simple que respeta comillas y comas dentro de campos
-function parseCSV(texto) {
-  const filas = [];
-  let fila = [];
-  let campo = '';
-  let dentroComillas = false;
-
-  for (let i = 0; i < texto.length; i++) {
-    const c = texto[i];
-    const sig = texto[i + 1];
-
-    if (dentroComillas) {
-      if (c === '"' && sig === '"') { campo += '"'; i++; }
-      else if (c === '"') { dentroComillas = false; }
-      else { campo += c; }
-    } else {
-      if (c === '"') { dentroComillas = true; }
-      else if (c === ',') { fila.push(campo); campo = ''; }
-      else if (c === '\n' || c === '\r') {
-        if (campo !== '' || fila.length > 0) {
-          fila.push(campo);
-          filas.push(fila);
-          fila = [];
-          campo = '';
+            } catch (error) {
+                console.error("Error al procesar el catálogo de anuncios:", error);
+            }
         }
-        if (c === '\r' && sig === '\n') i++;
-      } else { campo += c; }
-    }
-  }
-  if (campo !== '' || fila.length > 0) { fila.push(campo); filas.push(fila); }
-  return filas;
-}
 
-// Mezcla el array en su lugar (algoritmo Fisher-Yates) para que el orden
-// de los servicios dentro de cada categoría cambie en cada carga de página.
-function mezclarAleatorio(arr) {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-// Quita tildes y pasa a minúsculas, para comparar encabezados sin
-// depender de mayúsculas/acentos exactos.
-function normalizar(texto) {
-  return (texto || '')
-    .toString()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .trim();
-}
-
-// Busca, dentro de la fila de encabezados, la columna cuyo texto contiene
-// TODAS las palabras clave dadas. Devuelve el índice o -1 si no la encuentra.
-function buscarColumna(encabezados, ...palabrasClave) {
-  for (let i = 0; i < encabezados.length; i++) {
-    const h = normalizar(encabezados[i]);
-    if (palabrasClave.every(p => h.includes(p))) return i;
-  }
-  return -1;
-}
-
-// Construye el mapa de qué columna corresponde a cada dato, leyendo los
-// encabezados reales de la hoja. Así el orden de las columnas en Sheets
-// puede cambiar (agregar, mover, reordenar) sin romper el catálogo.
-function construirMapaColumnas(encabezados) {
-  return {
-    nombre:      buscarColumna(encabezados, 'nombre', 'servicio'),
-    categoria:   buscarColumna(encabezados, 'categoria'),
-    descripcion: buscarColumna(encabezados, 'descripcion'),
-    whatsapp:    buscarColumna(encabezados, 'whatsapp'),
-    direccion:   buscarColumna(encabezados, 'direccion'),
-    propietario: buscarColumna(encabezados, 'tu nombre'),
-    aprobado:    buscarColumna(encabezados, 'aprobado'),
-    patrocinado: buscarColumna(encabezados, 'patrocinado'),
-    vence:       buscarColumna(encabezados, 'vence'),
-    ubicacion:   buscarColumna(encabezados, 'ubicacion'),
-    // Opcional: permite dividir una categoría saturada (ej. Transporte →
-    // "Mototaxi/Delivery" vs "Autos/Vagonetas" vs "Transporte pesado")
-    // sin tener que crear categorías nuevas fijas en el código.
-    subcategoria: buscarColumna(encabezados, 'subcategoria')
-  };
-}
-
-function filaAServicio(cols, mapa) {
-  const val = (clave) => {
-    const i = mapa[clave];
-    return (i >= 0 && cols[i] !== undefined) ? cols[i].trim() : '';
-  };
-
-  const catTexto = val('categoria').toLowerCase();
-  const catCodigo = MAPA_CATEGORIAS[catTexto] || 'otros';
-  let telefono = val('whatsapp').replace(/\D/g, '');
-  if (telefono && !telefono.startsWith('591')) telefono = '591' + telefono;
-
-  const marcadoPatrocinado = val('patrocinado').toUpperCase() === 'TRUE';
-  const fechaVenceTexto = val('vence');
-  let patrocinadoVigente = marcadoPatrocinado;
-
-  // Si hay fecha de vencimiento y ya pasó, el patrocinio se desactiva solo
-  if (marcadoPatrocinado && fechaVenceTexto) {
-    const fechaVence = new Date(fechaVenceTexto + 'T23:59:59');
-    if (!isNaN(fechaVence) && fechaVence < new Date()) {
-      patrocinadoVigente = false;
-    }
-  }
-
-  return {
-    nombre: val('nombre'),
-    categoria: catCodigo,
-    emoji: EMOJIS_CAT[catCodigo] || '⭐',
-    descripcion: val('descripcion'),
-    direccion: val('direccion'),
-    whatsapp: telefono,
-    aprobado: val('aprobado').toUpperCase() === 'TRUE',
-    patrocinado: patrocinadoVigente,
-    ubicacionUrl: val('ubicacion'),
-    subcategoria: val('subcategoria')
-  };
-}
-
-// Máximo de espacios patrocinados permitidos por categoría
-const MAX_PATROCINADOS_POR_CATEGORIA = 2;
-
-// Si por error hay más patrocinados activos que el límite en una misma
-// categoría, solo se respetan los primeros (según el orden de la hoja)
-// y el resto se trata como servicio normal.
-function limitarPatrocinadosPorCategoria(servicios) {
-  const contadorPorCategoria = {};
-  servicios.forEach(s => {
-    if (s.patrocinado) {
-      const usados = contadorPorCategoria[s.categoria] || 0;
-      if (usados >= MAX_PATROCINADOS_POR_CATEGORIA) {
-        s.patrocinado = false;
-      } else {
-        contadorPorCategoria[s.categoria] = usados + 1;
-      }
-    }
-  });
-  return servicios;
-}
-
-async function cargarServicios() {
-  const grid = document.getElementById('grid-servicios');
-  try {
-    const resp = await fetch(SHEET_URL, { cache: 'no-store' });
-    if (!resp.ok) throw new Error('No se pudo leer la hoja');
-    const texto = await resp.text();
-    const filas = parseCSV(texto);
-
-    // La primera fila son los encabezados: se usan para ubicar cada columna por nombre
-    const encabezados = filas[0] || [];
-    const mapaColumnas = construirMapaColumnas(encabezados);
-
-    Object.entries(mapaColumnas).forEach(([campo, indice]) => {
-      if (indice === -1) console.warn(`No se encontró la columna "${campo}" en la hoja. Encabezados detectados:`, encabezados);
-    });
-
-    SERVICIOS = filas.slice(1)
-      .filter(f => f.length > 0 && f.join('').trim() !== '')
-      .map(f => filaAServicio(f, mapaColumnas))
-      .filter(s => s.nombre);
-
-    // Máximo 1 patrocinado por categoría
-    limitarPatrocinadosPorCategoria(SERVICIOS);
-
-    // Orden aleatorio en cada carga: nadie aparece siempre primero
-    mezclarAleatorio(SERVICIOS);
-
-    renderizar();
-  } catch (err) {
-    grid.innerHTML = `
-      <div style="grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--texto-suave);">
-        <div style="font-size:36px; margin-bottom:10px;">⚠️</div>
-        <p>No se pudieron cargar los servicios en este momento.</p>
-        <p style="font-size:12px; margin-top:6px;">Intenta recargar la página en unos segundos.</p>
-      </div>`;
-    console.error('Error cargando servicios desde Sheets:', err);
-  }
-}
-
-function crearTarjeta(s, idx) {
-  const cat = s.categoria || "otros";
-  const nombreCat = NOMBRES_CAT[cat] || "Otros";
-  const telLimpio = s.whatsapp.replace(/\D/g, '');
-  const mensajeWa = `Hola, vi tu servicio en el directorio de Okinawa Uno y me interesa saber más.`;
-  // Patrocinados: contacto directo e instantáneo (beneficio de pagar).
-  // Gratuitos: pasan por enlace.html, que muestra un banner de 5 segundos antes de redirigir.
-  const urlWa = s.patrocinado
-    ? `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensajeWa)}`
-    : `enlace.html?tel=${telLimpio}&msg=${encodeURIComponent(mensajeWa)}`;
-
-  const claseExtra = s.patrocinado ? ' patrocinada' : '';
-  const estrella = s.patrocinado
-    ? `<i class="estrella-patrocinado" aria-label="Patrocinado" title="Patrocinado">★</i>`
-    : '';
-  const mostrarUbicacion = s.patrocinado && s.ubicacionUrl;
-  const textoBotonWa = s.patrocinado ? formatearNumero(s.whatsapp) : 'Contactar por WhatsApp';
-
-  return `
-    <article class="tarjeta${claseExtra}" data-idx="${idx}">
-      <div class="tarjeta-header">
-        <div class="tarjeta-avatar-col">
-          <div class="tarjeta-avatar av-${cat}">${s.emoji || EMOJIS_CAT[cat] || '⭐'}</div>
-          <span class="tarjeta-cat-mini cat-${cat}" style="background:transparent; padding:0; border-radius:0;">${nombreCat}</span>
-          ${s.subcategoria ? `<span class="tarjeta-cat-mini" style="color:var(--texto-suave); font-weight:500;">${s.subcategoria}</span>` : ''}
-        </div>
-        <div class="tarjeta-info">
-          <div class="tarjeta-nombre-fila">
-            <span class="tarjeta-nombre-mask js-abrir-detalle" role="button" tabindex="0" aria-label="Ver detalle de ${s.nombre}">
-              <span class="tarjeta-nombre">${s.nombre}</span>
-            </span>
-            ${estrella}
-          </div>
-          <p class="tarjeta-desc">${s.descripcion}</p>
-          <div class="tarjeta-dir">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-              <circle cx="12" cy="9" r="2.5"/>
-            </svg>
-            <span>${s.direccion}</span>
-          </div>
-        </div>
-      </div>
-      <div class="fila-botones-wrap">
-        <div class="fila-botones">
-          <a href="${urlWa}" target="_blank" rel="noopener" class="btn-wa" aria-label="Contactar a ${s.nombre} por WhatsApp">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-            </svg>
-            <span>${textoBotonWa}</span>
-          </a>
-          ${mostrarUbicacion ? `
-          <a href="${s.ubicacionUrl}" target="_blank" rel="noopener" class="btn-ubicacion" aria-label="Ver ubicación de ${s.nombre} en el mapa" title="Ver ubicación en el mapa">
-            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-              <circle cx="12" cy="9" r="2.5"/>
-            </svg>
-          </a>` : ''}
-        </div>
-      </div>
-    </article>
-  `;
-}
-
-// Revisa cada nombre de tarjeta: si el texto no cabe en su espacio,
-// activa un desplazamiento tipo carrusel para poder leerlo completo.
-function ajustarNombresLargos() {
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.tarjeta-nombre-mask').forEach(mask => {
-      const texto = mask.querySelector('.tarjeta-nombre');
-      if (!texto) return;
-      texto.classList.remove('marquee');
-      texto.style.removeProperty('--desplazamiento');
-      texto.style.removeProperty('animation-duration');
-
-      const desbordeoPx = texto.scrollWidth - mask.clientWidth;
-      if (desbordeoPx > 4) {
-        texto.style.setProperty('--desplazamiento', `-${desbordeoPx}px`);
-        const duracion = Math.max(3.5, desbordeoPx / 22);
-        texto.style.animationDuration = `${duracion}s`;
-        texto.classList.add('marquee');
-      }
-    });
-  });
-}
-
-// Formatea el número boliviano quitando el 591 y agrupando en pares (ej: 7761 2322)
-function formatearNumero(numeroCompleto) {
-  let n = numeroCompleto.replace(/\D/g, '');
-  if (n.startsWith('591')) n = n.slice(3);
-  return n.replace(/(\d{4})(\d+)/, '$1 $2');
-}
-
-function renderizar() {
-  const grid = document.getElementById('grid-servicios');
-  const sinRes = document.getElementById('sin-resultados');
-
-  const filtrados = SERVICIOS.filter(s => {
-    if (!s.aprobado) return false;
-    const coincideCat = catActiva === "todos" || s.categoria === catActiva;
-    const coincideSubcat = catActiva === "todos" || subcatActiva === "todas" || s.subcategoria === subcatActiva;
-    const texto = textoBusqueda.toLowerCase().trim();
-    const coincideTexto = !texto ||
-      s.nombre.toLowerCase().includes(texto) ||
-      s.descripcion.toLowerCase().includes(texto) ||
-      s.direccion.toLowerCase().includes(texto) ||
-      (NOMBRES_CAT[s.categoria] || '').toLowerCase().includes(texto);
-    return coincideCat && coincideSubcat && coincideTexto;
-  });
-
-  // Patrocinados primero (mantiene el orden aleatorio dentro de cada grupo)
-  filtrados.sort((a, b) => (b.patrocinado === true) - (a.patrocinado === true));
-
-  // limpiar tarjetas anteriores (dejar solo el div sin-resultados)
-  Array.from(grid.children).forEach(c => {
-    if (c.id !== 'sin-resultados' && c.id !== 'cargando-msg') c.remove();
-  });
-  const cargandoMsg = document.getElementById('cargando-msg');
-  if (cargandoMsg) cargandoMsg.remove();
-
-  window.ultimosFiltrados = filtrados;
-
-  if (filtrados.length === 0) {
-    sinRes.style.display = 'block';
-  } else {
-    sinRes.style.display = 'none';
-    filtrados.forEach((s, idx) => {
-      grid.insertAdjacentHTML('beforeend', crearTarjeta(s, idx));
-    });
-  }
-
-  ajustarNombresLargos();
-}
-
-// ── BUSCADOR COLAPSABLE ──
-// Por defecto es solo un ícono. Al tocarlo se expande para escribir,
-// y se vuelve a colapsar si queda vacío al perder el foco.
-(function initBuscadorColapsable() {
-  const btnIcono = document.getElementById('btn-buscar-icono');
-  const wrap = document.getElementById('busqueda-wrap');
-  const input = document.getElementById('buscador');
-  if (!btnIcono || !wrap || !input) return;
-
-  function abrir() {
-    wrap.classList.remove('oculta');
-    btnIcono.setAttribute('aria-expanded', 'true');
-    setTimeout(() => input.focus(), 50);
-  }
-
-  function cerrar() {
-    wrap.classList.add('oculta');
-    btnIcono.setAttribute('aria-expanded', 'false');
-  }
-
-  btnIcono.addEventListener('click', () => {
-    const estaOculto = wrap.classList.contains('oculta');
-    if (estaOculto) abrir(); else cerrar();
-  });
-
-  input.addEventListener('blur', () => {
-    if (!input.value.trim()) cerrar();
-  });
-
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') { input.value = ''; textoBusqueda = ''; renderizar(); cerrar(); }
-  });
-})();
-
-// ── MODAL DE DETALLE ──
-(function initModalDetalle() {
-  const overlay = document.getElementById('modal-overlay');
-  const caja = document.getElementById('modal-caja');
-  const contenido = document.getElementById('modal-contenido');
-  const btnCerrar = document.getElementById('modal-cerrar');
-  const grid = document.getElementById('grid-servicios');
-  if (!overlay || !contenido || !grid) return;
-
-  function abrirModal(servicio) {
-    const cat = servicio.categoria || 'otros';
-    const nombreCat = NOMBRES_CAT[cat] || 'Otros';
-    const telLimpio = servicio.whatsapp.replace(/\D/g, '');
-    const mensajeWa = `Hola, vi tu servicio en el directorio de Okinawa Uno y me interesa saber más.`;
-    const urlWa = servicio.patrocinado
-      ? `https://wa.me/${telLimpio}?text=${encodeURIComponent(mensajeWa)}`
-      : `enlace.html?tel=${telLimpio}&msg=${encodeURIComponent(mensajeWa)}`;
-    const mostrarUbicacion = servicio.patrocinado && servicio.ubicacionUrl;
-
-    contenido.innerHTML = `
-      <div class="modal-header">
-        <div class="modal-avatar av-${cat}">${servicio.emoji || EMOJIS_CAT[cat] || '⭐'}</div>
-        <div>
-          <div class="modal-nombre">${servicio.nombre}${servicio.patrocinado ? ' <i class="estrella-patrocinado" style="font-size:15px">★</i>' : ''}</div>
-          <span class="tarjeta-cat-mini cat-${cat}" style="background:transparent;padding:0;">${nombreCat}${servicio.subcategoria ? ' · ' + servicio.subcategoria : ''}</span>
-        </div>
-      </div>
-      <p class="modal-desc">${servicio.descripcion}</p>
-      <div class="modal-dir">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
-        </svg>
-        <span>${servicio.direccion}</span>
-      </div>
-      <div class="fila-botones">
-        <a href="${urlWa}" target="_blank" rel="noopener" class="btn-wa">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-          </svg>
-          <span>Contactar por WhatsApp</span>
-        </a>
-        ${mostrarUbicacion ? `
-        <a href="${servicio.ubicacionUrl}" target="_blank" rel="noopener" class="btn-ubicacion" title="Ver ubicación en el mapa">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
-          </svg>
-        </a>` : ''}
-      </div>
-    `;
-    overlay.classList.remove('oculto');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function cerrarModal() {
-    overlay.classList.add('oculto');
-    document.body.style.overflow = '';
-  }
-
-  // Delegación: cualquier click en el nombre de una tarjeta abre el modal
-  grid.addEventListener('click', (e) => {
-    const disparador = e.target.closest('.js-abrir-detalle');
-    if (!disparador) return;
-    const idx = disparador.closest('.tarjeta')?.dataset.idx;
-    const servicio = window.ultimosFiltrados?.[idx];
-    if (servicio) abrirModal(servicio);
-  });
-
-  grid.addEventListener('keydown', (e) => {
-    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('js-abrir-detalle')) {
-      e.preventDefault();
-      e.target.click();
-    }
-  });
-
-  btnCerrar.addEventListener('click', cerrarModal);
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) cerrarModal(); });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !overlay.classList.contains('oculto')) cerrarModal();
-  });
-})();
-
-// Filtro por categoría
-document.querySelectorAll('.cat-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('activo'));
-    btn.classList.add('activo');
-    catActiva = btn.dataset.cat;
-    subcatActiva = "todas"; // al cambiar de categoría principal, se reinicia la subcategoría
-    renderizarSubcategorias();
-    renderizar();
-
-    // Centrar el botón elegido y pausar el carrusel un momento
-    btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-    pausarCarrusel(4000);
-  });
-});
-
-// Búsqueda
-let debounce;
-document.getElementById('buscador').addEventListener('input', e => {
-  clearTimeout(debounce);
-  debounce = setTimeout(() => {
-    textoBusqueda = e.target.value;
-    renderizar();
-  }, 200);
-});
-
-// ── CARRUSEL AUTOMÁTICO DE CATEGORÍAS ──
-// Se desplaza solo (vaivén) para insinuar que hay más categorías fuera de vista.
-// Se detiene un momento cuando el usuario toca, arrastra o elige una categoría.
-let pausarCarrusel = function(){}; // se reemplaza abajo si el navegador lo permite
-
-(function initCarrusel() {
-  const scrollEl = document.getElementById('cats-scroll');
-  if (!scrollEl) return;
-
-  const prefiereMenosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (prefiereMenosMovimiento) return;
-
-  let direccion = 1;
-  let pausado = false;
-  let reanudarTimeout = null;
-  const VELOCIDAD = 0.45; // px por frame
-
-  function paso() {
-    if (!pausado) {
-      const maxScroll = scrollEl.scrollWidth - scrollEl.clientWidth;
-      if (maxScroll > 2) {
-        scrollEl.scrollLeft += direccion * VELOCIDAD;
-        if (scrollEl.scrollLeft >= maxScroll - 1) direccion = -1;
-        if (scrollEl.scrollLeft <= 1) direccion = 1;
-      }
-    }
-    requestAnimationFrame(paso);
-  }
-
-  pausarCarrusel = function(ms) {
-    pausado = true;
-    clearTimeout(reanudarTimeout);
-    reanudarTimeout = setTimeout(() => { pausado = false; }, ms || 3500);
-  };
-
-  // Pausar si el usuario interactúa manualmente con la barra
-  ['pointerdown', 'touchstart', 'wheel'].forEach(evento => {
-    scrollEl.addEventListener(evento, () => pausarCarrusel(3500), { passive: true });
-  });
-
-  requestAnimationFrame(paso);
-})();
-
-cargarServicios();
-</script>
+        document.addEventListener('DOMContentLoaded', cargarCatalogo);
+    </script>
 </body>
 </html>
