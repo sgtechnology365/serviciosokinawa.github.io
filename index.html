@@ -23,7 +23,7 @@
             color: var(--dark);
         }
         
-        /* HEADER COMPACTO */
+        /* HEADER COMPACTO PARA APROVECHAR ESPACIO EN CELULARES */
         header {
             background: linear-gradient(135deg, var(--corporate-blue), #2a5298);
             color: white;
@@ -52,18 +52,17 @@
         }
         .btn-publicar:hover { background-color: var(--primary-dark); }
         
-        /* BANNER ROTATIVO DE PATROCINADORES SUPERIOR Y ESTADO INICIAL */
+        /* CARRUSEL DE PUBLICIDAD ROTATIVO ADAPTATIVO */
         .banner-patrocinado-top {
             max-width: 1200px;
             margin: 0.5rem auto;
             padding: 0 1rem;
             box-sizing: border-box;
-            transition: all 0.5s ease;
         }
         .banner-caja-rotativa {
             width: 100%;
-            height: 350px; /* Tamaño grande inicial */
-            background: #222;
+            height: 380px; /* Tamaño destacado al inicio */
+            background: #000;
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid #ddd;
@@ -71,27 +70,36 @@
             justify-content: center;
             align-items: center;
             position: relative;
-            transition: all 0.5s ease;
+            transition: height 0.4s ease; /* Transición fluida al encogerse */
+        }
+        /* Clase añadida dinámicamente por JavaScript al elegir sección */
+        .banner-caja-rotativa.compacto {
+            height: 110px;
         }
         .banner-caja-rotativa img {
+            position: absolute;
             width: 100%;
             height: 100%;
             object-fit: contain;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out; /* Efecto crossfade suave */
+            z-index: 1;
         }
-        .banner-patrocinado-top.compacto .banner-caja-rotativa {
-            height: 90px; /* Tamaño reducido al hacer clic */
+        .banner-caja-rotativa img.active {
+            opacity: 1;
+            z-index: 2;
         }
         .badge-patrocinio {
             position: absolute;
-            top: 4px;
-            left: 4px;
-            background: rgba(0,0,0,0.6);
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.7);
             color: var(--premium);
-            font-size: 0.65rem;
-            padding: 0.1rem 0.3rem;
+            font-size: 0.7rem;
+            padding: 0.15rem 0.4rem;
             border-radius: 3px;
             font-weight: bold;
-            z-index: 5;
+            z-index: 10;
         }
 
         /* NAVEGACIÓN Y SELECTORES */
@@ -117,14 +125,13 @@
             color: white;
         }
 
-        /* Buscador (Oculto al inicio) */
+        /* Buscador */
         .search-container {
             max-width: 450px;
             margin: 0.4rem auto;
             padding: 0 1rem;
-            display: none;
+            display: none; /* Oculto al inicio */
         }
-        .search-container.visible { display: block; }
         .search-box {
             width: 100%;
             padding: 0.45rem 1rem;
@@ -135,17 +142,17 @@
             outline: none;
         }
 
-        /* Carrusel de Categorías (Oculto al inicio) */
+        /* Carrusel de Categorías */
         .categories-carousel {
-            display: none;
+            display: flex;
             gap: 0.4rem;
             overflow-x: auto;
             padding: 0.4rem 1rem;
             max-width: 1200px;
             margin: 0 auto;
             scroll-behavior: smooth;
+            display: none; /* Oculto al inicio */
         }
-        .categories-carousel.visible { display: flex; }
         .categories-carousel::-webkit-scrollbar { height: 4px; }
         .categories-carousel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
         .cat-btn {
@@ -226,7 +233,7 @@
         .card-precio { font-size: 0.85rem; font-weight: 600; color: #2c3e50; margin: 0; }
         .card-badge-cat { font-size: 0.7rem; background: #eee; padding: 0.05rem 0.25rem; border-radius: 4px; }
 
-        /* Modales */
+        /* Modales de Detalles */
         .modal {
             display: none;
             position: fixed;
@@ -272,7 +279,7 @@
         .btn-wsp { background-color: var(--primary); color: white; }
         .btn-map { background-color: #4285F4; color: white; }
 
-        /* MODAL DE PUBLICIDAD WHATSAPP */
+        /* MODAL INTERFACE DE PUBLICIDAD SALIDA WHATSAPP */
         .modal-pub-full {
             display: none;
             position: fixed;
@@ -326,22 +333,22 @@
     <header>
         <h1>Catálogo Comercial Okinawa</h1>
         <p>Productos diarios y servicios comerciales</p>
-        <a href="https://tally.so/r/0QX0KZ" target="_blank" class="btn-publicar">➕ Publicar Anuncio</a>
+        <a href="https://tally.so/r/TU_CODIGO_FORMULARIO" target="_blank" class="btn-publicar">➕ Publicar Anuncio</a>
     </header>
 
-    <div class="banner-patrocinado-top" id="banner-contenedor-principal">
+    <!-- Caja del carrusel de patrocinadores -->
+    <div class="banner-patrocinado-top">
         <div class="banner-caja-rotativa" id="espacio-publicitario-rotativo">
-            <span class="badge-patrocinio">Patrocinado</span>
-            <div id="pub-carga-inicial" style="color:#888; font-size:0.9rem; padding: 2rem; text-align:center;">Cargando anuncios oficiales de patrocinadores...</div>
+            <span class="badge-patrocinio">Patrocinados</span>
         </div>
     </div>
 
     <div class="navigation-tabs">
-        <button class="tab-btn" id="btn-tab-productos" onclick="cambiarSeccion('productos')">🥖 Productos del Día</button>
-        <button class="tab-btn" id="btn-tab-servicios" onclick="cambiarSeccion('servicios')">🛠️ Servicios Profesionales</button>
+        <button class="tab-btn" onclick="cambiarSeccion('productos')">🥖 Productos del Día</button>
+        <button class="tab-btn" onclick="cambiarSeccion('servicios')">🛠️ Servicios Profesionales</button>
     </div>
 
-    <div class="search-container" id="contenedor-buscador-bloque">
+    <div class="search-container" id="contenedor-buscador">
         <input type="text" id="buscador" class="search-box" placeholder="Buscar por negocio o palabra clave..." oninput="filtrarCatalogo()">
     </div>
 
@@ -388,16 +395,15 @@
     </div>
 
     <script>
-        const AIRTABLE_TOKEN = 'patOvlESYw4gFYbK9.11a911ea7bd73cf457192d913301b9c6a57883ee026030bd5c5af356e10e2fd3'; 
+        const AIRTABLE_TOKEN = 'TU_PERSONAL_ACCESS_TOKEN_AQUI'; 
         const BASE_ID = 'app471dbUsqrk2x5X';
 
         let datosAnunciosGlobales = [];
         let codigosValidosGlobales = [];
         let publicidadGlobales = [];
-        let indiceRotacionPublicidad = 0;
-        let seccionActiva = ''; // Inicialmente vacío (ninguna seleccionada)
+        let seccionActiva = ''; // Inicialmente vacío para no cargar cartillas al entrar
         let categoriaActiva = 'Todos';
-        let rotacionIniciada = false;
+        let intervaloCarrusel;
 
         const iconosCategorias = {
             'Salud y bienestar': '❤️', 'Alimentos y bebidas': '🍎', 'Mecánica y autos': '🚗',
@@ -409,28 +415,16 @@
         function cambiarSeccion(tipo) {
             seccionActiva = tipo;
             
-            // Activar elementos visuales y colapsar banner publicitario
-            document.getElementById('banner-contenedor-principal').classList.add('compacto');
-            document.getElementById('contenedor-buscador-bloque').classList.add('visible');
-            document.getElementById('carrusel-categorias').classList.add('visible');
-            
+            // Reducir tamaño del carrusel y mostrar controles ocultos de forma inmediata
+            document.getElementById('espacio-publicitario-rotativo').classList.add('compacto');
+            document.getElementById('contenedor-buscador').style.display = 'block';
+            document.getElementById('carrusel-categorias').style.display = 'flex';
+
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.seccion-catalogo').forEach(sec => sec.classList.remove('active'));
             
-            if(tipo === 'productos') {
-                document.getElementById('btn-tab-productos').classList.add('active');
-                document.getElementById('seccion-productos').classList.add('active');
-            } else {
-                document.getElementById('btn-tab-servicios').classList.add('active');
-                document.getElementById('seccion-servicios').classList.add('active');
-            }
-            
-            // Iniciar rotación constante si no se había hecho antes
-            if(!rotacionIniciada) {
-                iniciarBannerRotativo();
-                rotacionIniciada = true;
-            }
-            
+            if(event) event.target.classList.add('active');
+            document.getElementById(`seccion-${tipo}`).classList.add('active');
             renderizarTarjetas();
         }
 
@@ -478,59 +472,57 @@
                     return !fCaducidad || fCaducidad >= hoy;
                 }) : [];
 
-                // MOSTRAR EL PRIMER ANUNCIO FIJO Y GRANDE AL CARGAR LA PÁGINA
-                mostrarAnuncioInicialFijo();
+                iniciarCarruselPatrocinadores();
+                renderizarTarjetas();
 
             } catch (error) {
                 console.error("Error al sincronizar datos comerciales:", error);
             }
         }
 
-        function mostrarAnuncioInicialFijo() {
+        function iniciarCarruselPatrocinadores() {
             const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
-            if (publicidadGlobales.length > 0) {
-                const publicidadesMezcladas = barajar([...publicidadGlobales]);
-                const primerBanner = publicidadesMezcladas[0].fields;
-                if(primerBanner['Imagen Publicitaria'] && primerBanner['Imagen Publicitaria'].length > 0) {
-                    espacioRotativo.innerHTML = `
-                        <span class="badge-patrocinio">Patrocinado</span>
-                        <img src="${primerBanner['Imagen Publicitaria'][0].url}" alt="Publicidad Fija">
-                    `;
-                }
-            } else {
-                espacioRotativo.innerHTML = `<div style="color:#888; font-size:0.9rem; padding: 2rem; text-align:center;">🚀 ¡Promociona tu marca aquí!<br>Espacio publicitario destacado disponible.</div>`;
-            }
-        }
+            espacioRotativo.innerHTML = '<span class="badge-patrocinio">Patrocinados</span>';
 
-        function iniciarBannerRotativo() {
-            const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
-            if (publicidadGlobales.length === 0) return;
-
-            function rotarAnuncio() {
-                if (indiceRotacionPublicidad >= publicidadGlobales.length) {
-                    indiceRotacionPublicidad = 0; 
-                }
-                const bannerCampos = publicidadGlobales[indiceRotacionPublicidad].fields;
-                if (bannerCampos['Imagen Publicitaria'] && bannerCampos['Imagen Publicitaria'].length > 0) {
-                    espacioRotativo.innerHTML = `
-                        <span class="badge-patrocinio">Patrocinado</span>
-                        <img src="${bannerCampos['Imagen Publicitaria'][0].url}" alt="${bannerCampos['Nombre Patrocinador'] || 'Publicidad'}">
-                    `;
-                }
-                indiceRotacionPublicidad++;
+            if (publicidadGlobales.length === 0) {
+                espacioRotativo.innerHTML += `<div style="color:#555; font-size:0.8rem;">Espacio Publicitario Disponible</div>`;
+                return;
             }
-            setInterval(rotarAnuncio, 4000); 
+
+            // Inyectar imágenes apiladas de manera absoluta
+            publicidadGlobales.forEach((pub, index) => {
+                const campos = pub.fields;
+                if (campos['Imagen Publicitaria'] && campos['Imagen Publicitaria'].length > 0) {
+                    const img = document.createElement('img');
+                    img.src = campos['Imagen Publicitaria'].url;
+                    img.alt = campos['Nombre Patrocinador'] || 'Publicidad';
+                    if (index === 0) img.classList.add('active');
+                    espacioRotativo.appendChild(img);
+                }
+            });
+
+            const imagenes = espacioRotativo.querySelectorAll('img');
+            if (imagenes.length <= 1) return;
+
+            let idxActual = 0;
+            intervaloCarrusel = setInterval(() => {
+                imagenes[idxActual].classList.remove('active');
+                idxActual = (idxActual + 1) % imagenes.length;
+                imagenes[idxActual].classList.add('active');
+            }, 4000); // Rotación cada 4 segundos
         }
 
         function renderizarTarjetas() {
-            if (seccionActiva === '') return; // Si no hay selección, no renderiza nada
-
             const contenedorProductos = document.getElementById('contenedor-productos');
             const contenedorServicios = document.getElementById('contenedor-servicios');
             const busqueda = document.getElementById('buscador').value.toLowerCase();
             
             contenedorProductos.innerHTML = '';
             contenedorServicios.innerHTML = '';
+            
+            // Bloqueo estricto: no renderizar ninguna cartilla comercial al cargar
+            if (!seccionActiva) return;
+
             const ahora = new Date();
 
             datosAnunciosGlobales.forEach(registro => {
@@ -542,15 +534,11 @@
 
                 if ((seccionActiva === 'productos' && tipo !== 'Producto') || (seccionActiva === 'servicios' && tipo !== 'Servicio')) return;
 
-                // --- LÓGICA REVISADA: EXPIRACIÓN DE 24 HORAS DESDE LA APROBACIÓN ---
-				if (tipo === 'Producto') {
-					// Si la "Fecha de Aprobación" está vacía en Airtable, usa la hora de creación como plan de respaldo
-					const fechaReferencia = new Date(campos['Fecha de Aprobación'] || campos['Fecha de Registro'] || registro.createdTime);
-					const diferenciaHoras = (ahora - fechaReferencia) / (1000 * 60 * 60);
-					
-					// Si ya pasaron más de 24 horas desde que lo aprobaste, el producto se oculta automáticamente
-					if (diferenciaHoras > 24) return; 
-				}
+                if (tipo === 'Producto') {
+                    const fechaCreacion = new Date(campos['Fecha de Publicación'] || registro.createdTime);
+                    const diferenciaHoras = (ahora - fechaCreacion) / (1000 * 60 * 60);
+                    if (diferenciaHoras > 24) return; 
+                }
 
                 if (categoriaActiva !== 'Todos' && categoria !== categoriaActiva) return;
 
@@ -577,8 +565,8 @@
                 if (tipo === 'Servicio') contenedorServicios.innerHTML += tarjetaHtml;
             });
 
-            if(seccionActiva === 'productos' && contenedorProductos.innerHTML === '') contenedorProductos.innerHTML = '<p>No hay productos vigentes hoy.</p>';
-            if(seccionActiva === 'servicios' && contenedorServicios.innerHTML === '') contenedorServicios.innerHTML = '<p>No hay servicios activos en esta sección.</p>';
+            if(seccionActiva === 'productos' && contenedorProductos.innerHTML === '') contenedorProductos.innerHTML = '<p>No hay ofertas de productos vigentes hoy.</p>';
+            if(seccionActiva === 'servicios' && contenedorServicios.innerHTML === '') contenedorServicios.innerHTML = '<p>No hay servicios comerciales en esta categoría.</p>';
         }
 
         function abrirModal(idRegistro) {
@@ -591,7 +579,7 @@
 
             const imgContenedor = document.getElementById('modal-imagen-contenedor');
             if (campos.Fotos && campos.Fotos.length > 0) {
-                imgContenedor.innerHTML = `<img src="${campos.Fotos[0].url}" alt="Imagen comercial">`;
+                imgContenedor.innerHTML = `<img src="${campos.Fotos.url}" alt="Imagen comercial">`;
                 imgContenedor.style.display = "block";
             } else {
                 imgContenedor.innerHTML = `<img src="https://via.placeholder.com/500x250?text=Sin+Imagen" alt="Sin imagen">`;
@@ -643,9 +631,9 @@
             
             if (publicidadGlobales.length > 0) {
                 const publicidadesMezcladas = barajar([...publicidadGlobales]);
-                const bannerSalida = publicidadesMezcladas[0].fields;
+                const bannerSalida = publicidadesMezcladas.fields;
                 if(bannerSalida['Imagen Publicitaria'] && bannerSalida['Imagen Publicitaria'].length > 0) {
-                    mediaWhatsApp.innerHTML = `<img src="${bannerSalida['Imagen Publicitaria'][0].url}" alt="Publicidad Salida">`;
+                    mediaWhatsApp.innerHTML = `<img src="${bannerSalida['Imagen Publicitaria'].url}" alt="Publicidad Salida">`;
                 }
             } else {
                 mediaWhatsApp.innerHTML = `<div style="padding:10rem 1rem; color:#666;">📢 Conectando de manera segura...</div>`;
@@ -655,7 +643,7 @@
             const txtSegundos = document.getElementById('timer-whatsapp');
             txtSegundos.innerText = tiempoRestante;
 
-            document.getElementById('muro-whatsapp').style.display = "flex"; 
+            document.getElementById('muro-whatsapp').style.display = "flex";
 
             const intervaloSalida = setInterval(() => {
                 tiempoRestante--;
@@ -663,8 +651,8 @@
 
                 if (tiempoRestante <= 0) {
                     clearInterval(intervaloSalida);
-                    document.getElementById('muro-whatsapp').style.display = "none"; 
-                    window.location.href = enlaceFinalWsp; 
+                    document.getElementById('muro-whatsapp').style.display = "none";
+                    window.location.href = enlaceFinalWsp; // Ejecución nativa instantánea
                 }
             }, 1000);
         }
