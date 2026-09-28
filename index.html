@@ -542,11 +542,15 @@
 
                 if ((seccionActiva === 'productos' && tipo !== 'Producto') || (seccionActiva === 'servicios' && tipo !== 'Servicio')) return;
 
-                if (tipo === 'Producto') {
-                    const fechaCreacion = new Date(campos['Fecha de Publicación'] || registro.createdTime);
-                    const diferenciaHoras = (ahora - fechaCreacion) / (1000 * 60 * 60);
-                    if (diferenciaHoras > 24) return; 
-                }
+                // --- LÓGICA REVISADA: EXPIRACIÓN DE 24 HORAS DESDE LA APROBACIÓN ---
+				if (tipo === 'Producto') {
+					// Si la "Fecha de Aprobación" está vacía en Airtable, usa la hora de creación como plan de respaldo
+					const fechaReferencia = new Date(campos['Fecha de Aprobación'] || campos['Fecha de Registro'] || registro.createdTime);
+					const diferenciaHoras = (ahora - fechaReferencia) / (1000 * 60 * 60);
+					
+					// Si ya pasaron más de 24 horas desde que lo aprobaste, el producto se oculta automáticamente
+					if (diferenciaHoras > 24) return; 
+				}
 
                 if (categoriaActiva !== 'Todos' && categoria !== categoriaActiva) return;
 
