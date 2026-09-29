@@ -1,5 +1,5 @@
 // CONFIGURACIÓN DE APIS DE AIRTABLE
-const AIRTABLE_TOKEN = 'patOvlESYw4gFYbK9.11a911ea7bd73cf457192d913301b9c6a57883ee026030bd5c5af356e10e2fd3'; // Pon tu Token aquí
+const AIRTABLE_TOKEN = 'TU_PERSONAL_ACCESS_TOKEN_AQUI'; // Cambia esto por tu token
 const BASE_ID = 'app471dbUsqrk2x5X';
 
 let datosAnunciosGlobales = [];
@@ -18,13 +18,16 @@ const iconosCategorias = {
 
 function cambiarSeccion(tipo) {
     seccionActiva = tipo;
-    const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
-    if (espacioRotativo) espacioRotativo.classList.add('compacto');
+    const cajaRotativa = document.getElementById('espacio-publicitario-rotativo');
+    if (cajaRotativa) cajaRotativa.classList.add('compacto');
+    
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.seccion-catalogo').forEach(sec => sec.classList.remove('active'));
+    
     if (event && event.target) event.target.classList.add('active');
     const seccionTarget = document.getElementById(`seccion-${tipo}`);
     if (seccionTarget) seccionTarget.classList.add('active');
+    
     renderizarTarjetas();
 }
 
@@ -74,7 +77,7 @@ async function cargarCatalogo() {
         iniciarCarruselPatrocinadores();
         renderizarTarjetas();
     } catch (error) {
-        console.error("Error al sincronizar datos comerciales Okinawa:", error);
+        console.error("Error de sincronización con Airtable:", error);
     }
 }
 
@@ -84,7 +87,7 @@ function iniciarCarruselPatrocinadores() {
     espacioRotativo.innerHTML = '<span class="badge-patrocinio">Patrocinados</span>';
 
     if (publicidadGlobales.length === 0) {
-        espacioRotativo.innerHTML += `<div style="color:#555; font-size:0.8rem; padding:1.5rem 0;">Espacio Publicitario Disponible</div>`;
+        espacioRotativo.innerHTML += `<div style="color:#555; font-size:0.8rem;">Espacio Publicitario Disponible</div>`;
         return;
     }
 
@@ -92,7 +95,7 @@ function iniciarCarruselPatrocinadores() {
         const campos = pub.fields;
         if (campos['Imagen Publicitaria'] && campos['Imagen Publicitaria'].length > 0) {
             const img = document.createElement('img');
-            img.src = campos['Imagen Publicitaria'][0].url; // Arreglado apuntando al index [0]
+            img.src = campos['Imagen Publicitaria'][0].url; // Corregido el parseo del index de Airtable
             img.alt = campos['Nombre Patrocinador'] || 'Publicidad';
             if (index === 0) img.classList.add('active');
             espacioRotativo.appendChild(img);
@@ -118,7 +121,7 @@ function renderizarTarjetas() {
     
     if (contenedorProductos) contenedorProductos.innerHTML = '';
     if (contenedorServicios) contenedorServicios.innerHTML = '';
-    if (!seccionActiva) return;
+    if (!seccionActiva) return; // Si no hay clic inicial, no muestra nada (Mantiene el orden exacto)
 
     const ahora = new Date();
 
@@ -181,7 +184,7 @@ function abrirModal(idRegistro) {
     const imgContenedor = document.getElementById('modal-imagen-contenedor');
     if (imgContenedor) {
         if (campos.Fotos && campos.Fotos.length > 0) {
-            imgContenedor.innerHTML = `<img src="${campos.Fotos[0].url}" alt="Imagen comercial">`; // Arreglado apuntando al index [0]
+            imgContenedor.innerHTML = `<img src="${campos.Fotos[0].url}" alt="Imagen comercial">`; // Corregido index de adjunto
             imgContenedor.style.display = "block";
         } else {
             imgContenedor.innerHTML = `<img src="https://placeholder.com" alt="Sin imagen">`;
@@ -189,9 +192,7 @@ function abrirModal(idRegistro) {
     }
 
     const badgeContenedor = document.getElementById('modal-badge-contenedor');
-    if (badgeContenedor) {
-        badgeContenedor.innerHTML = esPlusReal ? '<span class="modal-badge">Anuncio Destacado ✨</span>' : '';
-    }
+    if (badgeContenedor) badgeContenedor.innerHTML = esPlusReal ? '<span class="modal-badge">Anuncio Destacado ✨</span>' : '';
     
     document.getElementById('modal-nombre-comercial').innerText = campos['Nombre Comercial'] || 'Establecimiento';
     document.getElementById('modal-titulo-anuncio').innerText = campos['Título del Anuncio'] || 'Sin título';
@@ -203,13 +204,11 @@ function abrirModal(idRegistro) {
         if(esPlusReal && campos['Teléfono de WhatsApp']) {
             contactoContenedor.innerHTML = `<div class="modal-info-contacto">📱 Teléfono Directo: ${campos['Teléfono de WhatsApp']}</div>`;
             contactoContenedor.style.display = "block";
-        } else {
-            contactoContenedor.style.display = "none";
-        }
+        } else { contactoContenedor.style.display = "none"; }
     }
 
     const numeroWhatsApp = campos['Teléfono de WhatsApp'] || '';
-    const textoMensaje = encodeURIComponent('Hola, solicito información sobre tu anuncio que vi en el Catálogo Comercial.');
+    const textoMensaje = encodeURIComponent('Hola, solicito información sobre tu anuncio visto en el Catálogo Comercial.');
     const enlaceWspCompleto = `https://wa.me{numeroWhatsApp}?text=${textoMensaje}`;
     
     const btnWsp = document.getElementById('modal-btn-action-wsp');
@@ -229,18 +228,16 @@ function abrirModal(idRegistro) {
             btnMapa.style.display = "flex";
         } else { btnMapa.style.display = "none"; }
     }
-
-    const modalDetalle = document.getElementById('modal-detalle');
-    if (modalDetalle) modalDetalle.style.display = "flex";
+    document.getElementById('modal-detalle').style.display = "flex";
 }
 
 function activarMuroWhatsApp(enlaceFinalWsp) {
     const mediaWhatsApp = document.getElementById('media-whatsapp');
     if (mediaWhatsApp && publicidadGlobales.length > 0) {
         const publicidadesMezcladas = barajar([...publicidadGlobales]);
-        const bannerSalida = publicidadesMezcladas[0].fields; // Arreglado apuntando al index [0]
+        const bannerSalida = publicidadesMezcladas[0].fields;
         if(bannerSalida['Imagen Publicitaria'] && bannerSalida['Imagen Publicitaria'].length > 0) {
-            mediaWhatsApp.innerHTML = `<img src="${bannerSalida['Imagen Publicitaria'][0].url}" alt="Publicidad Salida">`; // Arreglado index de imagen [0]
+            mediaWhatsApp.innerHTML = `<img src="${bannerSalida['Imagen Publicitaria'][0].url}" alt="Publicidad Salida">`; // Corregido index de banner
         }
     } else if (mediaWhatsApp) {
         mediaWhatsApp.innerHTML = `<div style="padding:10rem 1rem; color:#666;">📢 Conectando de manera segura...</div>`;
@@ -263,11 +260,7 @@ function activarMuroWhatsApp(enlaceFinalWsp) {
     }, 1000);
 }
 
-function cerrarModal() { 
-    const modalDetalle = document.getElementById('modal-detalle');
-    if (modalDetalle) modalDetalle.style.display = "none"; 
-}
-
+function cerrarModal() { document.getElementById('modal-detalle').style.display = "none"; }
 function cerrarModalExterno(e) { if(e.target.id === 'modal-detalle') cerrarModal(); }
 
 document.addEventListener('DOMContentLoaded', cargarCatalogo);
