@@ -1,5 +1,5 @@
 // CONFIGURACIÓN DE APIS DE AIRTABLE
-const AIRTABLE_TOKEN = 'TU_PERSONAL_ACCESS_TOKEN_AQUI'; // Cambia esto por tu token
+const AIRTABLE_TOKEN = 'patOvlESYw4gFYbK9.11a911ea7bd73cf457192d913301b9c6a57883ee026030bd5c5af356e10e2fd3'; // Cambia esto por tu token
 const BASE_ID = 'app471dbUsqrk2x5X';
 
 let datosAnunciosGlobales = [];
