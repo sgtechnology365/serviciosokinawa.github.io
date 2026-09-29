@@ -295,187 +295,198 @@
         </div>
     </div>
     <script>
-        // CONFIGURACIÓN DE SEGURIDAD DE TU AIRTABLE
-        const AIRTABLE_TOKEN = 'patOvlESYw4gFYbK9.11a911ea7bd73cf457192d913301b9c6a57883ee026030bd5c5af356e10e2fd3'; // PON TU TOKEN AQUÍ
-        const BASE_ID = 'app471dbUsqrk2x5X';
+		// CONFIGURACIÓN DE ACCESO DE TU BASE DE DATOS AIRTABLE
+		const AIRTABLE_TOKEN = 'patOvlESYw4gFYbK9.11a911ea7bd73cf457192d913301b9c6a57883ee026030bd5c5af356e10e2fd3'; // CAMBIA POR TU TOKEN
+		const BASE_ID = 'app471dbUsqrk2x5X';
 
-        let datosAnunciosGlobales = []; let codigosValidosGlobales = []; 
-        let publicidadGlobales = []; let seccionActiva = ''; 
-        let categoriaActiva = 'Todos'; let intervaloCarrusel;
+		let datosAnunciosGlobales = []; 
+		let codigosValidosGlobales = []; 
+		let publicidadGlobales = []; 
+		let seccionActiva = ''; 
+		let categoriaActiva = 'Todos'; 
+		let intervaloCarrusel;
 
-        const iconosCategorias = {
-            'Salud y bienestar': '❤️', 'Alimentos y bebidas': '🍎', 
-            'Mecánica y autos': '🚗', 'Tecnología e informática': '💻', 
-            'Educación y capacitación': '📚', 'Belleza y cuidado personal': '✨',
-            'Construcción y ferretería': '🧱', 'Transporte y encomiendas': '📦', 
-            'Tiendas y comercio': '🏪', 'Otros servicios': '⚙️'
-        };
+		const iconosCategorias = {
+			'Salud y bienestar': '❤️', 'Alimentos y bebidas': '🍎', 
+			'Mecánica y autos': '🚗', 'Tecnología e informática': '💻', 
+			'Educación y capacitación': '📚', 'Belleza y cuidado personal': '✨',
+			'Construcción y ferretería': '🧱', 'Transporte y encomiendas': '📦', 
+			'Tiendas y comercio': '🏪', 'Otros servicios': '⚙️'
+		};
 
-        function cambiarSeccion(tipo) {
-            seccionActiva = tipo;
-            const elCaja = document.getElementById('espacio-publicitario-rotativo');
-            if (elCaja) elCaja.classList.add('compacto');
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.seccion-catalogo').forEach(sec => sec.classList.remove('active'));
-            if(event && event.target) event.target.classList.add('active');
-            const targetSec = document.getElementById(`seccion-${tipo}`);
-            if (targetSec) targetSec.classList.add('active');
-            renderizarTarjetas();
-        }
+		function cambiarSeccion(tipo) {
+			seccionActiva = tipo;
+			const elCaja = document.getElementById('espacio-publicitario-rotativo');
+			if (elCaja) elCaja.classList.add('compacto');
+			document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+			document.querySelectorAll('.seccion-catalogo').forEach(sec => sec.classList.remove('active'));
+			if(event && event.target) event.target.classList.add('active');
+			const targetSec = document.getElementById(`seccion-${tipo}`);
+			if (targetSec) targetSec.classList.add('active');
+			renderizarTarjetas();
+		}
 
-        function filtrarCategoria(cat) {
-            categoriaActiva = cat;
-            document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
-            if(event && event.target) event.target.classList.add('active');
-            renderizarTarjetas();
-        }
+		function filtrarCategoria(cat) {
+			categoriaActiva = cat;
+			document.querySelectorAll('.cat-btn').forEach(btn => btn.classList.remove('active'));
+			if(event && event.target) event.target.classList.add('active');
+			renderizarTarjetas();
+		}
 
-        function filtrarCatalogo() { renderizarTarjetas(); }
+		function filtrarCatalogo() { renderizarTarjetas(); }
 
-        function barajar(arreglo) {
-            for (let i = arreglo.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arreglo[i], arreglo[j]] = [arreglo[j], arreglo[i]];
-            }
-            return arreglo;
-        }
+		function barajar(arreglo) {
+			for (let i = arreglo.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[arreglo[i], arreglo[j]] = [arreglo[j], arreglo[i]];
+			}
+			return arreglo;
+		}
+		async function cargarCatalogo() {
+    try {
+        const urlAnuncios = `https://airtable.com{BASE_ID}/CatalogoComercial?filterByFormula=%7BAprobado%7D%3D1`;
+        const urlCodigos = `https://airtable.com{BASE_ID}/CodigosPrepagados`;
+        const urlPub = `https://airtable.com{BASE_ID}/PublicidadPatrocinada?filterByFormula=%7BActivo%7D%3D1`;
 
-        async function cargarCatalogo() {
-            try {
-                const [resAnuncios, resCodigos, resPub] = await Promise.all([
-                    fetch(`https://airtable.com{BASE_ID}/CatalogoComercial?filterByFormula=%7BAprobado%7D%3D1`, 
-                          { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } }),
-                    fetch(`https://airtable.com{BASE_ID}/CodigosPrepagados`, 
-                          { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } }),
-                    fetch(`https://airtable.com{BASE_ID}/PublicidadPatrocinada?filterByFormula=%7BActivo%7D%3D1`, 
-                          { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } })
-                ]);
-                const dA = await resAnuncios.json(); 
-                const dC = await resCodigos.json(); 
-                const dP = await resPub.json();
-                datosAnunciosGlobales = barajar(dA.records || []);
-                codigosValidosGlobales = dC.records ? dC.records.map(r => r.fields['Código']) : [];
-                const hoy = new Date();
-                publicidadGlobales = dP.records ? dP.records.filter(r => {
-                    const fC = r.fields['Fecha Caducidad'] ? new Date(r.fields['Fecha Caducidad']) : null;
-                    return !fC || fC >= hoy;
-                }) : [];
-                iniciarCarruselPatrocinadores();
-                renderizarTarjetas();
-            } catch (error) { console.error("Error al leer Airtable:", error); }
-        }
-        function iniciarCarruselPatrocinadores() {
-            const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
-            if (!espacioRotativo) return;
-            espacioRotativo.innerHTML = '<span class="badge-patrocinio">Patrocinados</span>';
-            if (publicidadGlobales.length === 0) {
-                espacioRotativo.innerHTML += `<div style="color:#555; font-size:0.8rem;">Publicidad Disponible</div>`; 
-                return;
-            }
-            publicidadGlobales.forEach((pub, index) => {
-                const campos = pub.fields;
-                if (campos['Imagen Publicitaria'] && campos['Imagen Publicitaria'].length > 0) {
-                    const img = document.createElement('img'); 
-                    img.src = campos['Imagen Publicitaria'][0].url; // Corregido index de Airtable
-                    img.alt = campos['Nombre Patrocinador'] || 'Publicidad';
-                    if (index === 0) img.classList.add('active');
-                    espacioRotativo.appendChild(img);
-                }
-            });
-            const imagenes = espacioRotativo.querySelectorAll('img'); 
-            if (imagenes.length <= 1) return;
-            let idxActual = 0; if (intervaloCarrusel) clearInterval(intervaloCarrusel);
-            intervaloCarrusel = setInterval(() => {
-                imagenes[idxActual].classList.remove('active'); 
-                idxActual = (idxActual + 1) % imagenes.length; 
-                imagenes[idxActual].classList.add('active');
-            }, 4000);
-        }
+        const [resAnuncios, resCodigos, resPub] = await Promise.all([
+            fetch(urlAnuncios, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } }),
+            fetch(urlCodigos, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } }),
+            fetch(urlPub, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } })
+        ]);
 
-        function renderizarTarjetas() {
-            const cProd = document.getElementById('contenedor-productos'); 
-            const cServ = document.getElementById('contenedor-servicios');
-            const bIn = document.getElementById('buscador'); 
-            const busqueda = bIn ? bIn.value.toLowerCase() : '';
-            if (cProd) cProd.innerHTML = ''; if (cServ) cServ.innerHTML = '';
-            if (!seccionActiva) return;
-            const ahora = new Date();
-            datosAnunciosGlobales.forEach(registro => {
-                const campos = registro.fields; 
-                const tipo = campos['Tipo de Publicación']; 
-                const cat = campos['Categoría'] || 'Otros servicios';
-                const cod = campos['Código de Pago Plus']; 
-                const esPlusReal = campos['Plan / Nivel'] === 'Plus' && codigosValidosGlobales.includes(cod);
-                if ((seccionActiva === 'productos' && tipo !== 'Producto') || (seccionActiva === 'servicios' && tipo !== 'Servicio')) return;
-                if (tipo === 'Producto') {
-                    const fR = new Date(campos['Fecha de Aprobación'] || registro.createdTime);
-                    if (((ahora - fR) / (1000 * 60 * 60)) > 24) return;
-                }
-                if (categoriaActiva !== 'Todos' && cat !== categoriaActiva) return;
-                const nC = (campos['Nombre Comercial'] || '').toLowerCase(); 
-                const tA = (campos['Título del Anuncio'] || '').toLowerCase();
-                if (busqueda && !nC.includes(busqueda) && !tA.includes(busqueda)) return;
-                const icono = iconosCategorias[cat] || '⚙️';
-                const cardHtml = `
-                    <div class="card ${esPlusReal ? 'card-premium' : ''}" onclick="abrirModal('${registro.id}')">
-                        <div><h3 class="card-nombre-comercial">${campos['Nombre Comercial'] || 'Negocio'}</h3><p class="card-titulo-anuncio">${campos['Título del Anuncio'] || 'Sin título'}</p></div>
-                        <div class="card-meta"><p class="card-precio">${campos['Precio / Tarifa'] || 'A consultar'}</p><span class="card-badge-cat">${icono}</span></div>
-                    </div>`;
-                if (tipo === 'Producto' && cProd) cProd.innerHTML += cardHtml;
-                if (tipo === 'Servicio' && cServ) cServ.innerHTML += cardHtml;
-            });
-            if(seccionActiva === 'productos' && cProd && cProd.innerHTML === '') cProd.innerHTML = '<p>No hay ofertas hoy.</p>';
-            if(seccionActiva === 'servicios' && cServ && cServ.innerHTML === '') cServ.innerHTML = '<p>No hay servicios en esta categoría.</p>';
-        }
+        const dA = await resAnuncios.json(); 
+        const dC = await resCodigos.json(); 
+        const dP = await resPub.json();
 
-        function abrirModal(idReg) {
-            const reg = datosAnunciosGlobales.find(r => r.id === idReg); if(!reg) return;
-            const campos = reg.fields; const cod = campos['Código de Pago Plus']; 
-            const esPlusReal = campos['Plan / Nivel'] === 'Plus' && codigosValidosGlobales.includes(cod);
-            const imgC = document.getElementById('modal-imagen-contenedor');
-            if (imgC) {
-                if (campos.Fotos && campos.Fotos.length > 0) { 
-                    imgC.innerHTML = `<img src="${campos.Fotos[0].url}" alt="Imagen">`; // Corregido index de Airtable
-                    imgC.style.display = "block"; 
-                } else { imgC.innerHTML = `<img src="https://placeholder.com" alt="Sin imagen">`; }
-            }
-            const bC = document.getElementById('modal-badge-contenedor'); 
-            if (bC) bC.innerHTML = esPlusReal ? '<span class="modal-badge">Anuncio Destacado ✨</span>' : '';
-            document.getElementById('modal-nombre-comercial').innerText = campos['Nombre Comercial'] || 'Establecimiento';
-            document.getElementById('modal-titulo-anuncio').innerText = campos['Título del Anuncio'] || 'Sin título';
-            document.getElementById('modal-descripcion').innerText = campos['Descripción o Actividad'] || 'Sin descripción.';
-            document.getElementById('modal-precio').innerHTML = `<strong>Precio:</strong> ${campos['Precio / Tarifa'] || 'A consultar'}`;
-            const cC = document.getElementById('modal-contacto-visible');
-            if (cC) { if(esPlusReal && campos['Teléfono de WhatsApp']) { cC.innerHTML = `<div class="modal-info-contacto">📱 Teléfono: ${campos['Teléfono de WhatsApp']}</div>`; cC.style.display = "block"; } else { cC.style.display = "none"; } }
-            const numW = campos['Teléfono de WhatsApp'] || ''; 
-            const txtM = encodeURIComponent('Hola, solicito información sobre tu anuncio visto en el Catálogo.');
-            const linkW = `https://wa.me{numW}?text=${txtM}`; 
-            const btnW = document.getElementById('modal-btn-action-wsp');
-            if (btnW) { 
-                const nBtn = btnW.cloneNode(true); btnW.parentNode.replaceChild(nBtn, btnW); 
-                nBtn.addEventListener('click', () => { if (esPlusReal) { window.open(linkW, '_blank'); } else { activarMuroWhatsApp(linkW); } }); 
-            }
-            const btnM = document.getElementById('modal-btn-mapa'); 
-            if (btnM) { if(campos['Enlace de Google Maps']) { btnM.href = campos['Enlace de Google Maps']; btnM.style.display = "flex"; } else { btnM.style.display = "none"; } }
-            document.getElementById('modal-detalle').style.display = "flex";
-        }
+        datosAnunciosGlobales = barajar(dA.records || []);
+        codigosValidosGlobales = dC.records ? dC.records.map(r => r.fields['Código']) : [];
+        
+        const hoy = new Date();
+        publicidadGlobales = dP.records ? dP.records.filter(r => {
+            const fC = r.fields['Fecha Caducidad'] ? new Date(r.fields['Fecha Caducidad']) : null;
+            return !fC || fC >= hoy;
+        }) : [];
 
-        function activarMuroWhatsApp(enlaceFinalWsp) {
-            const mediaW = document.getElementById('media-whatsapp');
-            if (mediaW && publicidadGlobales.length > 0) {
-                const pM = barajar([...publicidadGlobales]); const bS = pM[0].fields; // Corregido index de publicidad
-                if(bS['Imagen Publicitaria'] && bS['Imagen Publicitaria'].length > 0) { 
-                    mediaW.innerHTML = `<img src="${bS['Imagen Publicitaria'][0].url}" alt="Publicidad">`; // Corregido index
-                }
-            } else if (mediaW) { mediaW.innerHTML = `<div style="padding:10rem 1rem; color:#666;">📢 Conectando de manera segura...</div>`; }
-            let tR = 5; const txtS = document.getElementById('timer-whatsapp'); if (txtS) txtS.innerText = tR;
-            const mW = document.getElementById('muro-whatsapp'); if (mW) mW.style.display = "flex";
-            const intS = setInterval(() => { tR--; if (txtS) txtS.innerText = tR; if (tR <= 0) { clearInterval(intS); if (mW) mW.style.display = "none"; window.location.href = enlaceFinalWsp; } }, 1000);
-        }
+        iniciarCarruselPatrocinadores();
+        renderizarTarjetas();
+    } catch (error) { console.error("Error al sincronizar datos:", error); }
+	}
 
-        function cerrarModal() { document.getElementById('modal-detalle').style.display = "none"; }
-        function cerrarModalExterno(e) { if(e.target.id === 'modal-detalle') cerrarModal(); }
-        document.addEventListener('DOMContentLoaded', cargarCatalogo);
+	function iniciarCarruselPatrocinadores() {
+		const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
+		if (!espacioRotativo) return;
+		espacioRotativo.innerHTML = '<span class="badge-patrocinio">Patrocinados</span>';
+		if (publicidadGlobales.length === 0) {
+			espacioRotativo.innerHTML += `<div style="color:#555; font-size:0.8rem;">Publicidad Disponible</div>`; 
+			return;
+		}
+		publicidadGlobales.forEach((pub, index) => {
+			const campos = pub.fields;
+			if (campos['Imagen Publicitaria'] && campos['Imagen Publicitaria'].length > 0) {
+				const img = document.createElement('img'); 
+				// Extracción robusta de la URL del primer objeto de la lista de Airtable
+				img.src = campos['Imagen Publicitaria'][0].url; 
+				img.alt = campos['Nombre Patrocinador'] || 'Publicidad';
+				if (index === 0) img.classList.add('active');
+				espacioRotativo.appendChild(img);
+			}
+		});
+		const imagenes = espacioRotativo.querySelectorAll('img'); 
+		if (imagenes.length <= 1) return;
+		let idxActual = 0; if (intervaloCarrusel) clearInterval(intervaloCarrusel);
+		intervaloCarrusel = setInterval(() => {
+			imagenes[idxActual].classList.remove('active'); 
+			idxActual = (idxActual + 1) % imagenes.length; 
+			imagenes[idxActual].classList.add('active');
+		}, 4000);
+		}
+		function renderizarTarjetas() {
+		const cProd = document.getElementById('contenedor-productos'); 
+		const cServ = document.getElementById('contenedor-servicios');
+		const bIn = document.getElementById('buscador'); 
+		const busqueda = bIn ? bIn.value.toLowerCase() : '';
+		if (cProd) cProd.innerHTML = ''; if (cServ) cServ.innerHTML = '';
+		if (!seccionActiva) return; // Oculta todo al inicio hasta que el usuario elija sección
+		const ahora = new Date();
+		datosAnunciosGlobales.forEach(registro => {
+			const campos = registro.fields; 
+			const tipo = campos['Tipo de Publicación']; 
+			const cat = campos['Categoría'] || 'Otros servicios';
+			const cod = campos['Código de Pago Plus']; 
+			const esPlusReal = campos['Plan / Nivel'] === 'Plus' && codigosValidosGlobales.includes(cod);
+			if ((seccionActiva === 'productos' && tipo !== 'Producto') || (seccionActiva === 'servicios' && tipo !== 'Servicio')) return;
+			if (tipo === 'Producto') {
+				const fR = new Date(campos['Fecha de Aprobación'] || registro.createdTime);
+				if (((ahora - fR) / (1000 * 60 * 60)) > 24) return;
+			}
+			if (categoriaActiva !== 'Todos' && cat !== categoriaActiva) return;
+			const nC = (campos['Nombre Comercial'] || '').toLowerCase(); 
+			const tA = (campos['Título del Anuncio'] || '').toLowerCase();
+			if (busqueda && !nC.includes(busqueda) && !tA.includes(busqueda)) return;
+			const icono = iconosCategorias[cat] || '⚙️';
+			const cardHtml = `
+				<div class="card ${esPlusReal ? 'card-premium' : ''}" onclick="abrirModal('${registro.id}')">
+					<div><h3 class="card-nombre-comercial">${campos['Nombre Comercial'] || 'Negocio'}</h3><p class="card-titulo-anuncio">${campos['Título del Anuncio'] || 'Sin título'}</p></div>
+					<div class="card-meta"><p class="card-precio">${campos['Precio / Tarifa'] || 'A consultar'}</p><span class="card-badge-cat">${icono}</span></div>
+				</div>`;
+			if (tipo === 'Producto' && cProd) cProd.innerHTML += cardHtml;
+			if (tipo === 'Servicio' && cServ) cServ.innerHTML += cardHtml;
+		});
+		if(seccionActiva === 'productos' && cProd && cProd.innerHTML === '') cProd.innerHTML = '<p>No hay ofertas hoy.</p>';
+		if(seccionActiva === 'servicios' && cServ && cServ.innerHTML === '') cServ.innerHTML = '<p>No hay servicios en esta categoría.</p>';
+		}
+
+		function abrirModal(idReg) {
+			const reg = datosAnunciosGlobales.find(r => r.id === idReg); if(!reg) return;
+			const campos = reg.fields; const cod = campos['Código de Pago Plus']; 
+			const esPlusReal = campos['Plan / Nivel'] === 'Plus' && codigosValidosGlobales.includes(cod);
+			const imgC = document.getElementById('modal-imagen-contenedor');
+			if (imgC) {
+				if (campos.Fotos && campos.Fotos.length > 0) { 
+					// Extracción robusta de la URL del primer archivo adjunto de Airtable
+					imgC.innerHTML = `<img src="${campos.Fotos[0].url}" alt="Imagen">`; 
+					imgC.style.display = "block"; 
+				} else { imgC.innerHTML = `<img src="https://placeholder.com" alt="Sin imagen">`; }
+			}
+			const bC = document.getElementById('modal-badge-contenedor'); 
+			if (bC) bC.innerHTML = esPlusReal ? '<span class="modal-badge">Anuncio Destacado ✨</span>' : '';
+			document.getElementById('modal-nombre-comercial').innerText = campos['Nombre Comercial'] || 'Establecimiento';
+			document.getElementById('modal-titulo-anuncio').innerText = campos['Título del Anuncio'] || 'Sin título';
+			document.getElementById('modal-descripcion').innerText = campos['Descripción o Actividad'] || 'Sin descripción.';
+			document.getElementById('modal-precio').innerHTML = `<strong>Precio:</strong> ${campos['Precio / Tarifa'] || 'A consultar'}`;
+			const cC = document.getElementById('modal-contacto-visible');
+			if (cC) { if(esPlusReal && campos['Teléfono de WhatsApp']) { cC.innerHTML = `<div class="modal-info-contacto">📱 Teléfono: ${campos['Teléfono de WhatsApp']}</div>`; cC.style.display = "block"; } else { cC.style.display = "none"; } }
+			const numW = campos['Teléfono de WhatsApp'] || ''; 
+			const txtM = encodeURIComponent('Hola, solicito información sobre tu anuncio visto en el Catálogo.');
+			const linkW = `https://wa.me{numW}?text=${txtM}`; 
+			const btnW = document.getElementById('modal-btn-action-wsp');
+			if (btnW) { 
+				const nBtn = btnW.cloneNode(true); btnW.parentNode.replaceChild(nBtn, btnW); 
+				nBtn.addEventListener('click', () => { if (esPlusReal) { window.open(linkW, '_blank'); } else { activarMuroWhatsApp(linkW); } }); 
+			}
+			const btnM = document.getElementById('modal-btn-mapa'); 
+			if (btnM) { if(campos['Enlace de Google Maps']) { btnM.href = campos['Enlace de Google Maps']; btnM.style.display = "flex"; } else { btnM.style.display = "none"; } }
+			document.getElementById('modal-detalle').style.display = "flex";
+		}
+
+		function activarMuroWhatsApp(enlaceFinalWsp) {
+			const mediaW = document.getElementById('media-whatsapp');
+			if (mediaW && publicidadGlobales.length > 0) {
+				const pM = barajar([...publicidadGlobales]); const bS = pM[0].fields; 
+				if(bS['Imagen Publicitaria'] && bS['Imagen Publicitaria'].length > 0) { 
+					// Extracción de URL del primer objeto de publicidad
+					mediaW.innerHTML = `<img src="${bS['Imagen Publicitaria'][0].url}" alt="Publicidad">`; 
+				}
+			} else if (mediaW) { mediaW.innerHTML = `<div style="padding:10rem 1rem; color:#666;">📢 Conectando de manera segura...</div>`; }
+			let tR = 5; const txtS = document.getElementById('timer-whatsapp'); if (txtS) txtS.innerText = tR;
+			const mW = document.getElementById('muro-whatsapp'); if (mW) mW.style.display = "flex";
+			const intS = setInterval(() => { tR--; if (txtS) txtS.innerText = tR; if (tR <= 0) { clearInterval(intS); if (mW) mW.style.display = "none"; window.location.href = enlaceFinalWsp; } }, 1000);
+		}
+
+		function cerrarModal() { document.getElementById('modal-detalle').style.display = "none"; }
+		function cerrarModalExterno(e) { if(e.target.id === 'modal-detalle') cerrarModal(); }
+		document.addEventListener('DOMContentLoaded', cargarCatalogo);
+
     </script>
 </body>
 </html>
