@@ -354,19 +354,29 @@
 		}
 		async function cargarCatalogo() {
 			try {
-				const urlAnuncios = `https://airtable.com{BASE_ID}/CatalogoComercial?filterByFormula=%7BAprobado%7D%3D1`;
-				const urlCodigos = `https://airtable.com{BASE_ID}/CodigosPrepagados`;
-				const urlPub = `https://airtable.com{BASE_ID}/PublicidadPatrocinada?filterByFormula=%7BActivo%7D%3D1`;
+				// Estructuración limpia y explícita de las URLs oficiales de la API de Airtable
+				const urlAnuncios = "https://airtable.com" + BASE_ID + "/CatalogoComercial?filterByFormula=%7BAprobado%7D%3D1";
+				const urlCodigos = "https://airtable.com" + BASE_ID + "/CodigosPrepagados";
+				const urlPub = "https://airtable.com" + BASE_ID + "/PublicidadPatrocinada?filterByFormula=%7BActivo%7D%3D1";
+
+				console.log("Intentando conectar a Airtable...");
 
 				const [resAnuncios, resCodigos, resPub] = await Promise.all([
-					fetch(urlAnuncios, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } }),
-					fetch(urlCodigos, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } }),
-					fetch(urlPub, { headers: { Authorization: `Bearer ${AIRTABLE_TOKEN}` } })
+					fetch(urlAnuncios, { headers: { Authorization: "Bearer " + AIRTABLE_TOKEN } }),
+					fetch(urlCodigos, { headers: { Authorization: "Bearer " + AIRTABLE_TOKEN } }),
+					fetch(urlPub, { headers: { Authorization: "Bearer " + AIRTABLE_TOKEN } })
 				]);
+
+				// Verificación de estados de respuesta del servidor
+				console.log("Estatus Anuncios:", resAnuncios.status);
+				console.log("Estatus Códigos:", resCodigos.status);
+				console.log("Estatus Publicidad:", resPub.status);
 
 				const dA = await resAnuncios.json(); 
 				const dC = await resCodigos.json(); 
 				const dP = await resPub.json();
+
+				console.log("Registros crudos cargados exitosamente:", dA.records ? dA.records.length : 0);
 
 				datosAnunciosGlobales = barajar(dA.records || []);
 				codigosValidosGlobales = dC.records ? dC.records.map(r => r.fields['Código']) : [];
@@ -379,9 +389,10 @@
 
 				iniciarCarruselPatrocinadores();
 				renderizarTarjetas();
-			} catch (error) { console.error("Error al conectar con Airtable:", error); }
+			} catch (error) { 
+				console.error("Error detectado en la función de carga:", error); 
+			}
 		}
-
 		function iniciarCarruselPatrocinadores() {
 			const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
 			if (!espacioRotativo) return;
