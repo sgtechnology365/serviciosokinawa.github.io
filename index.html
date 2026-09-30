@@ -342,9 +342,9 @@
 			if(event && event.target) event.target.classList.add('active');
 			renderizarTarjetas();
 		}
-
+		
 		function filtrarCatalogo() { renderizarTarjetas(); }
-
+		
 		function barajar(arreglo) {
 			for (let i = arreglo.length - 1; i > 0; i--) {
 				const j = Math.floor(Math.random() * (i + 1));
@@ -352,14 +352,19 @@
 			}
 			return arreglo;
 		}
-
+		
 		async function cargarCatalogo() {
 			try {
-				// DIRECCIÓN OFICIAL CORREGIDA: Incluye estrictamente las barras diagonales /v0/ requeridas
-				const urlAPI = "https://airtable.com" + BASE_ID + "/CatalogoComercial?maxRecords=100";
+				// SOLUCIÓN DEFINITIVA: URL fija y explícita, inmune a errores de variables pegadas
+				const urlAPI = "https://airtable.com";
 
 				console.log("--- INICIANDO CONEXIÓN SEGURA PASO 1 ---");
 				console.log("Dirección real consultada:", urlAPI);
+
+				// Verificamos si las credenciales de autenticación globales están vacías
+				if (typeof AIRTABLE_TOKEN === 'undefined' || AIRTABLE_TOKEN === 'TU_PERSONAL_ACCESS_TOKEN_AQUI') {
+					console.error("❌ Alerta: No has configurado tu AIRTABLE_TOKEN real en las líneas superiores del archivo.");
+				}
 
 				const respuesta = await fetch(urlAPI, { 
 					headers: { Authorization: "Bearer " + AIRTABLE_TOKEN } 
@@ -383,11 +388,11 @@
 					console.log(Object.keys(primerRegistro.fields));
 					console.log("=========================================");
 				} else {
-					console.log("⚠️ Alerta: Conexión exitosa, pero la tabla no tiene registros.");
+					console.log("⚠️ Alerta: Conexión exitosa (200), pero tu tabla está vacía en Airtable.");
 				}
 
 				datosAnunciosGlobales = datos.records || [];
-				publicidadGlobales = []; // Pausado temporalmente por seguridad
+				publicidadGlobales = []; 
 
 				renderizarTarjetas();
 
@@ -395,7 +400,6 @@
 				console.error("❌ Falla atrapada en la fase de conexión única:", error); 
 			}
 		}
-
 		function iniciarCarruselPatrocinadores() {
 			const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
 			if (!espacioRotativo) return;
