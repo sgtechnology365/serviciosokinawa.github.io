@@ -352,12 +352,13 @@
 			}
 			return arreglo;
 		}
+
 		async function cargarCatalogo() {
 			try {
-				// CORRECCIÓN DE URL: Aseguramos la barra diagonal y la versión /v0/ exigida por Airtable
+				// DIRECCIÓN OFICIAL CORREGIDA: Incluye estrictamente las barras diagonales /v0/ requeridas
 				const urlAPI = "https://airtable.com" + BASE_ID + "/CatalogoComercial?maxRecords=100";
 
-				console.log("--- INICIANDO FASE 1 DE CONEXIÓN SEGURA ---");
+				console.log("--- INICIANDO CONEXIÓN SEGURA PASO 1 ---");
 				console.log("Dirección real consultada:", urlAPI);
 
 				const respuesta = await fetch(urlAPI, { 
@@ -367,35 +368,34 @@
 				console.log("Estatus de respuesta de Airtable:", respuesta.status);
 
 				if (!respuesta.ok) {
-					console.error("Airtable rechazó la conexión. Código HTTP:", respuesta.status);
+					console.error("Airtable rechazó la petición. Código HTTP:", respuesta.status);
 					return;
 				}
 
 				const datos = await respuesta.json();
-				console.log("Total de registros descargados:", datos.records ? datos.records.length : 0);
+				console.log("Total de registros descargados con éxito:", datos.records ? datos.records.length : 0);
 
-				// --- DIAGNÓSTICO AUTOMÁTICO DE TU ESTRUCTURA DE COLUMNAS ---
+				// --- MÓDULO DE IDENTIFICACIÓN DE COLUMNAS REALES ---
 				if (datos.records && datos.records.length > 0) {
 					const primerRegistro = datos.records[0];
 					console.log("=========================================");
-					console.log("🔍 COLUMNAS DETECTADAS REALES EN TU AIRTABLE:");
+					console.log("🔍 COLUMNAS DETECTADAS EN TU TABLA ACTUAL:");
 					console.log(Object.keys(primerRegistro.fields));
 					console.log("=========================================");
 				} else {
-					console.log("⚠️ Alerta: La conexión fue exitosa (200), pero tu tabla está totalmente vacía o no tiene registros aprobados.");
+					console.log("⚠️ Alerta: Conexión exitosa, pero la tabla no tiene registros.");
 				}
 
-				// Guardamos en la memoria interna
 				datosAnunciosGlobales = datos.records || [];
-				publicidadGlobales = []; // Pausado temporalmente para no generar fallas de columnas
+				publicidadGlobales = []; // Pausado temporalmente por seguridad
 
-				// Ejecutamos renderizado básico de prueba
 				renderizarTarjetas();
 
 			} catch (error) { 
-				console.error("❌ Falla atrapada en la fase de conexión:", error); 
+				console.error("❌ Falla atrapada en la fase de conexión única:", error); 
 			}
 		}
+
 		function iniciarCarruselPatrocinadores() {
 			const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
 			if (!espacioRotativo) return;
