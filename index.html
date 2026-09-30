@@ -354,50 +354,48 @@
 		}
 		async function cargarCatalogo() {
 			try {
-			// CORRECCIÓN CRÍTICA: Se añade la ruta oficial /v0/ con las barras diagonales correctas
-			const urlAPI = "https://airtable.com" + BASE_ID + "/CatalogoComercial?filterByFormula=%7BAprobado%7D%3D1";
+				// CORRECCIÓN DE URL: Aseguramos la barra diagonal y la versión /v0/ exigida por Airtable
+				const urlAPI = "https://airtable.com" + BASE_ID + "/CatalogoComercial?maxRecords=100";
 
-			console.log("Intentando conectar UNICAMENTE a CatalogoComercial...");
-			console.log("Dirección de consulta generada:", urlAPI);
+				console.log("--- INICIANDO FASE 1 DE CONEXIÓN SEGURA ---");
+				console.log("Dirección real consultada:", urlAPI);
 
-			const respuesta = await fetch(urlAPI, { 
-				headers: { Authorization: "Bearer " + AIRTABLE_TOKEN } 
-			});
+				const respuesta = await fetch(urlAPI, { 
+					headers: { Authorization: "Bearer " + AIRTABLE_TOKEN } 
+				});
 
-			// Imprime el estatus del servidor (Buscamos que diga 200)
-			console.log("Estatus de respuesta del servidor:", respuesta.status);
+				console.log("Estatus de respuesta de Airtable:", respuesta.status);
 
-			if (!respuesta.ok) {
-				console.error("Error en la petición de Airtable. Código HTTP:", respuesta.status);
-				return;
+				if (!respuesta.ok) {
+					console.error("Airtable rechazó la conexión. Código HTTP:", respuesta.status);
+					return;
+				}
+
+				const datos = await respuesta.json();
+				console.log("Total de registros descargados:", datos.records ? datos.records.length : 0);
+
+				// --- DIAGNÓSTICO AUTOMÁTICO DE TU ESTRUCTURA DE COLUMNAS ---
+				if (datos.records && datos.records.length > 0) {
+					const primerRegistro = datos.records[0];
+					console.log("=========================================");
+					console.log("🔍 COLUMNAS DETECTADAS REALES EN TU AIRTABLE:");
+					console.log(Object.keys(primerRegistro.fields));
+					console.log("=========================================");
+				} else {
+					console.log("⚠️ Alerta: La conexión fue exitosa (200), pero tu tabla está totalmente vacía o no tiene registros aprobados.");
+				}
+
+				// Guardamos en la memoria interna
+				datosAnunciosGlobales = datos.records || [];
+				publicidadGlobales = []; // Pausado temporalmente para no generar fallas de columnas
+
+				// Ejecutamos renderizado básico de prueba
+				renderizarTarjetas();
+
+			} catch (error) { 
+				console.error("❌ Falla atrapada en la fase de conexión:", error); 
 			}
-
-			const datos = await respuesta.json();
-			
-			// Imprime cuántas filas aprobadas descargó realmente del servidor
-			console.log("Registros crudos descargados con éxito:", datos.records ? datos.records.length : 0);
-
-			// Guardamos los datos en la memoria global y los barajamos aleatoriamente
-			datosAnunciosGlobales = barajar(datos.records || []);
-			
-			// Inicializamos las pautas publicitarias extrayendo SOLO las filas de esta misma tabla 
-			// donde el usuario además sea un Plan / Nivel "Plus"
-			publicidadGlobales = datosAnunciosGlobales.filter(r => {
-				return r.fields['Plan / Nivel'] === 'Plus';
-			});
-
-			console.log("Anuncios Plus encontrados para rotación superior:", publicidadGlobales.length);
-
-			// Disparamos la interfaz gráfica
-			iniciarCarruselPatrocinadores();
-			renderizarTarjetas();
-
-		} catch (error) { 
-			console.error("Error crítico detectado en la fase de conexión única:", error); 
 		}
-	}
-
-
 		function iniciarCarruselPatrocinadores() {
 			const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
 			if (!espacioRotativo) return;
