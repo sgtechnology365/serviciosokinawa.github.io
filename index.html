@@ -355,16 +355,11 @@
 		
 		async function cargarCatalogo() {
 			try {
-				// SOLUCIÓN DEFINITIVA: URL fija y explícita, inmune a errores de variables pegadas
+				// ENLACE TOTALMENTE FIJO: Sin sumas ni variables intermedias que recorten la URL
 				const urlAPI = "https://airtable.com";
 
 				console.log("--- INICIANDO CONEXIÓN SEGURA PASO 1 ---");
 				console.log("Dirección real consultada:", urlAPI);
-
-				// Verificamos si las credenciales de autenticación globales están vacías
-				if (typeof AIRTABLE_TOKEN === 'undefined' || AIRTABLE_TOKEN === 'TU_PERSONAL_ACCESS_TOKEN_AQUI') {
-					console.error("❌ Alerta: No has configurado tu AIRTABLE_TOKEN real en las líneas superiores del archivo.");
-				}
 
 				const respuesta = await fetch(urlAPI, { 
 					headers: { Authorization: "Bearer " + AIRTABLE_TOKEN } 
@@ -400,6 +395,7 @@
 				console.error("❌ Falla atrapada en la fase de conexión única:", error); 
 			}
 		}
+
 		function iniciarCarruselPatrocinadores() {
 			const espacioRotativo = document.getElementById('espacio-publicitario-rotativo');
 			if (!espacioRotativo) return;
